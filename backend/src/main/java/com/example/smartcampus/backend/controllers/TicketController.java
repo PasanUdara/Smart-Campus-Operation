@@ -9,13 +9,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
-@CrossOrigin(origins = "http://localhost:5173")
+// මෙන්න මේ line එක අනිවාර්යයෙන්ම ඕනේ. localhost සහ 127.0.0.1 කියන දෙකම ඇතුළත් කරලා තියෙන්නේ.
+@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"}, allowCredentials = "true", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class TicketController {
 
     @Autowired
     private TicketService ticketService;
 
-    // 1. POST: Create Ticket with Images [cite: 125]
+    // 1. POST: Create Ticket
     @PostMapping
     public Ticket createTicket(
             @RequestParam("resourceId") String resourceId,
@@ -26,13 +27,13 @@ public class TicketController {
         return ticketService.saveTicket(resourceId, category, description, priority, images);
     }
 
-    // 2. GET: Fetch all tickets (Admin/Technician roles අනුව filter කළ හැක) [cite: 126]
+    // 2. GET: Fetch all tickets
     @GetMapping
     public List<Ticket> getAllTickets() {
         return ticketService.getAllTickets();
     }
 
-    // 3. PUT: Update status (Admin සඳහා REJECT, Technician සඳහා RESOLVED) [cite: 127]
+    // 3. PUT: Update status
     @PutMapping("/{id}")
     public Ticket updateTicket(@PathVariable String id, 
                                @RequestParam("status") String status,
@@ -41,9 +42,9 @@ public class TicketController {
         return ticketService.updateTicketStatus(id, status, note, technicianId);
     }
 
-    // 4. DELETE: Delete a comment [cite: 128]
-    @DeleteMapping("/{id}/comments/{commentId}")
-    public void deleteComment(@PathVariable String id, @PathVariable String commentId) {
-        ticketService.deleteComment(id, commentId);
+    // 4. DELETE: Delete a ticket
+    @DeleteMapping("/{id}")
+    public void deleteTicket(@PathVariable String id) {
+        ticketService.deleteTicket(id);
     }
 }

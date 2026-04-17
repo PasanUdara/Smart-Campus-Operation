@@ -16,7 +16,6 @@ public class TicketService {
 
     private final String UPLOAD_DIR = Paths.get("uploads").toAbsolutePath().toString();
 
-    // Ticket එකක් සෑදීම සහ පින්තූර upload කිරීම [cite: 125]
     public Ticket saveTicket(String resId, String cat, String desc, String prio, MultipartFile[] images) {
         Ticket ticket = new Ticket();
         ticket.setResourceId(resId);
@@ -39,7 +38,6 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    // Admin/Technician විසින් status update කිරීම [cite: 41, 127]
     public Ticket updateTicketStatus(String id, String status, String note, String technicianId) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
@@ -56,5 +54,10 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.getComments().removeIf(c -> c.getId().equals(commentId));
         ticketRepository.save(ticket);
+    }
+
+    // මෙන්න මේ කොටස තමයි අඩුවෙලා තිබුණේ 🗑️
+    public void deleteTicket(String id) {
+        ticketRepository.deleteById(id);
     }
 }
