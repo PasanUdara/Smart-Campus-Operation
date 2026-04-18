@@ -1,19 +1,15 @@
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
-import './App.css';
+import { useState } from 'react'
+import './App.css'
+import Home from './pages/Home'
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <Router>
-      <div className="bg-gray-50 min-h-screen">
-        
-        <main className="container mx-auto py-6">
-           <AppRoutes />
-        </main>
-      </div>
-    </Router>
-  );
+    <>
+      <Home/>
+    </>
+  )
 }
 
-export default App;
+export default App
