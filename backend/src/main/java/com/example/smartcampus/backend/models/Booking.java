@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Document(collection = "test")
+@Document(collection = "bookings")
 @Data
 public class Booking {
 
