@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface TicketRepository extends MongoRepository<Ticket, String> {
-    List<Ticket> findByStatus(String status);
-    List<Ticket> findByTechnicianId(String technicianId); // Technician ට අදාළ tickets සෙවීමට [cite: 126]
+    // Model එකේ තියෙන assignedTechnicianId නමට ගැලපෙන්න මෙතන හදලා තියෙන්නේ
+    List<Ticket> findByAssignedTechnicianId(String assignedTechnicianId);
 }

@@ -1,6 +1,7 @@
 package com.example.smartcampus.backend.services;
 
 import com.example.smartcampus.backend.models.Ticket;
+import com.example.smartcampus.backend.models.Comment;
 import com.example.smartcampus.backend.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,21 +17,22 @@ public class TicketService {
 
     private final String UPLOAD_DIR = Paths.get("uploads").toAbsolutePath().toString();
 
-    public Ticket saveTicket(String resId, String cat, String desc, String prio, MultipartFile[] images) {
+    public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, MultipartFile[] images) {
         Ticket ticket = new Ticket();
         ticket.setResourceId(resId);
         ticket.setCategory(cat);
         ticket.setDescription(desc);
         ticket.setPriority(prio);
+        ticket.setContactDetails(contact);
 
         if (images != null) {
-            File uploadFolder = new File(UPLOAD_DIR);
-            if (!uploadFolder.exists()) uploadFolder.mkdirs();
-
-            for (MultipartFile file : images) {
+            File folder = new File(UPLOAD_DIR);
+            if (!folder.exists()) folder.mkdirs();
+            int limit = Math.min(images.length, 3);
+            for (int i = 0; i < limit; i++) {
                 try {
-                    String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                    file.transferTo(new File(UPLOAD_DIR + File.separator + fileName));
+                    String fileName = UUID.randomUUID() + "_" + images[i].getOriginalFilename();
+                    images[i].transferTo(new File(UPLOAD_DIR + File.separator + fileName));
                     ticket.getImageUrls().add(fileName);
                 } catch (Exception e) { e.printStackTrace(); }
             }
@@ -38,26 +40,33 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket updateTicketStatus(String id, String status, String note, String technicianId) {
+    public List<Ticket> getAllTickets() { return ticketRepository.findAll(); }
+
+    public Ticket updateStatus(String id, String status, String note, String techId) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
+        if (techId != null) ticket.setAssignedTechnicianId(techId);
+        if (status.equals("RESOLVED")) ticket.setResolutionNotes(note);
         if (status.equals("REJECTED")) ticket.setRejectedReason(note);
-        else ticket.setResolutionNotes(note);
-        
-        if (technicianId != null) ticket.setTechnicianId(technicianId);
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> getAllTickets() { return ticketRepository.findAll(); }
-
-    public void deleteComment(String id, String commentId) {
-        Ticket ticket = ticketRepository.findById(id).orElseThrow();
-        ticket.getComments().removeIf(c -> c.getId().equals(commentId));
+    public void addComment(String tId, String authId, String text) {
+        Ticket ticket = ticketRepository.findById(tId).orElseThrow();
+        Comment c = new Comment();
+        c.setId(UUID.randomUUID().toString());
+        c.setAuthorId(authId);
+        c.setText(text);
+        c.setTimestamp(new Date());
+        ticket.getComments().add(c);
         ticketRepository.save(ticket);
     }
 
-    // මෙන්න මේ කොටස තමයි අඩුවෙලා තිබුණේ 🗑️
-    public void deleteTicket(String id) {
-        ticketRepository.deleteById(id);
+    public void deleteComment(String tId, String cId) {
+        Ticket ticket = ticketRepository.findById(tId).orElseThrow();
+        ticket.getComments().removeIf(c -> c.getId().equals(cId));
+        ticketRepository.save(ticket);
     }
+
+    public void deleteTicket(String id) { ticketRepository.deleteById(id); }
 }
