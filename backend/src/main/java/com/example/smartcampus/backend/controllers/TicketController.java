@@ -5,46 +5,45 @@ import com.example.smartcampus.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/tickets")
-// මෙන්න මේ line එක අනිවාර්යයෙන්ම ඕනේ. localhost සහ 127.0.0.1 කියන දෙකම ඇතුළත් කරලා තියෙන්නේ.
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"}, allowCredentials = "true", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class TicketController {
 
     @Autowired
     private TicketService ticketService;
 
-    // 1. POST: Create Ticket
     @PostMapping
-    public Ticket createTicket(
-            @RequestParam("resourceId") String resourceId,
-            @RequestParam("category") String category,
-            @RequestParam("description") String description,
-            @RequestParam("priority") String priority,
+    public Ticket create(
+            @RequestParam("resourceId") String resId, @RequestParam("category") String cat,
+            @RequestParam("description") String desc, @RequestParam("priority") String prio,
+            @RequestParam("contactDetails") String contact,
             @RequestParam(value = "images", required = false) MultipartFile[] images) {
-        return ticketService.saveTicket(resourceId, category, description, priority, images);
+        return ticketService.saveTicket(resId, cat, desc, prio, contact, images);
     }
 
-    // 2. GET: Fetch all tickets
     @GetMapping
-    public List<Ticket> getAllTickets() {
-        return ticketService.getAllTickets();
-    }
+    public List<Ticket> getAll() { return ticketService.getAllTickets(); }
 
-    // 3. PUT: Update status
     @PutMapping("/{id}")
-    public Ticket updateTicket(@PathVariable String id, 
-                               @RequestParam("status") String status,
-                               @RequestParam(value = "note", required = false) String note,
-                               @RequestParam(value = "technicianId", required = false) String technicianId) {
-        return ticketService.updateTicketStatus(id, status, note, technicianId);
+    public Ticket update(@PathVariable String id, @RequestParam("status") String status,
+                         @RequestParam(value = "note", required = false) String note,
+                         @RequestParam(value = "techId", required = false) String techId) {
+        return ticketService.updateStatus(id, status, note, techId);
     }
 
-    // 4. DELETE: Delete a ticket
-    @DeleteMapping("/{id}")
-    public void deleteTicket(@PathVariable String id) {
-        ticketService.deleteTicket(id);
+    @PostMapping("/{id}/comments")
+    public void addComment(@PathVariable String id, @RequestBody Map<String, String> body) {
+        ticketService.addComment(id, body.get("authorId"), body.get("text"));
     }
+
+    @DeleteMapping("/{id}/comments/{commentId}")
+    public void deleteComment(@PathVariable String id, @PathVariable String commentId) {
+        ticketService.deleteComment(id, commentId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTicket(@PathVariable String id) { ticketService.deleteTicket(id); }
 }
