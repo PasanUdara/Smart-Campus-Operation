@@ -15,9 +15,13 @@ public class Ticket {
     private String description;
     private String priority;
     private String contactDetails; 
+    private String reporterName;
+    private String studentId;
+    private String email;
+    private String building;
     private List<String> imageUrls = new ArrayList<>(); 
     private String status = "OPEN"; 
-    private String assignedTechnicianId; // ✅ නම නිවැරදියි
+    private String assignedTechnicianId;
     private String resolutionNotes;
     private String rejectedReason;
     private List<Comment> comments = new ArrayList<>(); 
