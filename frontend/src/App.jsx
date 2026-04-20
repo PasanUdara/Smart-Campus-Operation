@@ -7,8 +7,8 @@ function App() {
   return (
     <Router>
       <div className="bg-gray-50 min-h-screen">
-        
-        <main className="container mx-auto py-6">
+       
+        <main>
            <AppRoutes />
         </main>
       </div>

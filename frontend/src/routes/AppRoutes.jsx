@@ -1,24 +1,25 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// ඔයාගේ Maintenance Pages Import කරගැනීම
+// 🏠 Maintenance Pages Import
+import Home from '../pages/Home';
 import TicketCreate from '../pages/Maintenance/TicketCreate';
 import TicketList from '../pages/Maintenance/TicketList';
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* පටන් ගන්න කොටම කෙලින්ම Fault Report පේජ් එකට යවමු */}
-      <Route path="/" element={<Navigate to="/report-fault" />} />
+      {/* 1. ප්‍රධාන හෝම් පේජ් එක */}
+      <Route path="/" element={<Home />} />
       
-      {/* User පේජ් එක: ටිකට් එකක් දාන තැන */}
+      {/* 2. ටිකට් එකක් Create කරන පේජ් එක */}
       <Route path="/report-fault" element={<TicketCreate />} />
       
-      {/* Admin/Technician පේජ් එක: ටිකට් කළමනාකරණය කරන Dashboard එක */}
+      {/* 3. ටිකට් ඔක්කොම පේන ලිස්ට් එක (Admin/Staff) */}
       <Route path="/admin/tickets" element={<TicketList />} />
 
-      {/* අනාගතයේදී අනිත් සාමාජිකයන්ගේ පේජ් මෙතනට ඇඩ් කළ හැක */}
-      {/* <Route path="/assets" element={<AssetCatalogue />} /> */}
+      {/* වැරදි Path එකක් ගැහුවොත් Home එකට යවන්න */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
