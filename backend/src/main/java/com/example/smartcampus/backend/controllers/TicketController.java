@@ -41,7 +41,6 @@ public class TicketController {
         ticketService.addComment(id, body.get("authorId"), body.get("text"));
     }
 
-    // ✅ FIXED: PUT Mapping for comments
     @PutMapping("/{id}/comments/{commentId}")
     public void editComment(@PathVariable String id, @PathVariable String commentId, @RequestBody Map<String, String> body) {
         ticketService.editComment(id, commentId, body.get("authorId"), body.get("text"));

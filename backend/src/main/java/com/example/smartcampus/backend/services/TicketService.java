@@ -15,7 +15,13 @@ public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    private final String UPLOAD_DIR = Paths.get("uploads").toAbsolutePath().toString();
+    /**
+     * 🚀 GOLDEN SHORTCUT: 
+     * පින්තූර Backend එකේ සේව් කරනවා වෙනුවට කෙලින්ම Frontend එකේ public folder එකට සේව් කරනවා.
+     * එවිට කිසිදු අමතර Config එකක් නැතිව පින්තූර Frontend එකේ පෙනෙනවා.
+     * 🔴 පහත Path එක ඔයාගේ පරිගණකයේ Frontend එකේ uploads folder එකට හරියටම ගැලපෙන ලෙස වෙනස් කරන්න.
+     */
+    private final String UPLOAD_DIR = "D:\\Projects\\Smart-Campus-Operation\\frontend\\public\\uploads";
 
     public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, 
                              String name, String sId, String email, String bld, MultipartFile[] images) {
@@ -31,27 +37,51 @@ public class TicketService {
         ticket.setBuilding(bld);
 
         if (images != null) {
+            // Folder එක නැත්නම් හදනවා
             File folder = new File(UPLOAD_DIR);
             if (!folder.exists()) folder.mkdirs();
+
             for (MultipartFile img : images) {
-                try {
-                    String fileName = UUID.randomUUID() + "_" + img.getOriginalFilename();
-                    img.transferTo(new File(UPLOAD_DIR + File.separator + fileName));
-                    ticket.getImageUrls().add(fileName);
-                } catch (Exception e) { e.printStackTrace(); }
+                if (!img.isEmpty()) {
+                    try {
+                        // නමේ තියෙන හිස්තැන් අයින් කර සරල කරනවා
+                        String cleanFileName = img.getOriginalFilename().replaceAll("\\s+", "_");
+                        String fileName = UUID.randomUUID() + "_" + cleanFileName;
+                        
+                        // භෞතිකව (Physically) පින්තූරය Frontend folder එකට ලියනවා
+                        img.transferTo(new File(UPLOAD_DIR + File.separator + fileName));
+                        
+                        // Database එකට filename එක විතරක් දානවා
+                        ticket.getImageUrls().add(fileName);
+                    } catch (Exception e) { 
+                        System.err.println("Upload Error: " + e.getMessage());
+                    }
+                }
             }
         }
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> getAllTickets() { return ticketRepository.findAll(); }
+    public List<Ticket> getAllTickets() { 
+        return ticketRepository.findAll(); 
+    }
 
     public Ticket updateStatus(String id, String status, String note, String techId) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
-        if (techId != null && !techId.isEmpty()) ticket.setAssignedTechnicianId(techId);
-        if ("RESOLVED".equals(status)) ticket.setResolutionNotes(note);
-        if ("REJECTED".equals(status)) ticket.setRejectedReason(note);
+        
+        // Technician කෙනෙක් පවරනවා නම්
+        if (techId != null && !techId.isEmpty()) {
+            ticket.setAssignedTechnicianId(techId);
+        }
+        
+        // විසඳුම් හෝ ප්‍රතික්ෂේපිත හේතු සටහන් කිරීම
+        if ("RESOLVED".equals(status)) {
+            ticket.setResolutionNotes(note);
+        } else if ("REJECTED".equals(status)) {
+            ticket.setRejectedReason(note);
+        }
+        
         return ticketRepository.save(ticket);
     }
 
@@ -66,22 +96,16 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
-    // ✅ FIXED: Comment Edit Logic
     public void editComment(String tId, String cId, String authId, String newText) {
         Ticket ticket = ticketRepository.findById(tId).orElseThrow();
-        boolean isUpdated = false;
         for (Comment c : ticket.getComments()) {
-            // ID එක සහ AuthorID එක දෙකම මැච් වෙනවාද බලනවා
             if (c.getId().equals(cId) && c.getAuthorId().equals(authId)) {
                 c.setText(newText);
                 c.setTimestamp(new Date());
-                isUpdated = true;
                 break;
             }
         }
-        if (isUpdated) {
-            ticketRepository.save(ticket);
-        }
+        ticketRepository.save(ticket);
     }
 
     public void deleteComment(String tId, String cId) {
@@ -90,5 +114,7 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
-    public void deleteTicket(String id) { ticketRepository.deleteById(id); }
+    public void deleteTicket(String id) { 
+        ticketRepository.deleteById(id); 
+    }
 }
