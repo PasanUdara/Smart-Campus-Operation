@@ -15,12 +15,7 @@ public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    /**
-     * 🚀 GOLDEN SHORTCUT: 
-     * පින්තූර Backend එකේ සේව් කරනවා වෙනුවට කෙලින්ම Frontend එකේ public folder එකට සේව් කරනවා.
-     * එවිට කිසිදු අමතර Config එකක් නැතිව පින්තූර Frontend එකේ පෙනෙනවා.
-     * 🔴 පහත Path එක ඔයාගේ පරිගණකයේ Frontend එකේ uploads folder එකට හරියටම ගැලපෙන ලෙස වෙනස් කරන්න.
-     */
+  
     private final String UPLOAD_DIR = "D:\\Projects\\Smart-Campus-Operation\\frontend\\public\\uploads";
 
     public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, 
@@ -37,21 +32,21 @@ public class TicketService {
         ticket.setBuilding(bld);
 
         if (images != null) {
-            // Folder එක නැත්නම් හදනවා
+            
             File folder = new File(UPLOAD_DIR);
             if (!folder.exists()) folder.mkdirs();
 
             for (MultipartFile img : images) {
                 if (!img.isEmpty()) {
                     try {
-                        // නමේ තියෙන හිස්තැන් අයින් කර සරල කරනවා
+                        
                         String cleanFileName = img.getOriginalFilename().replaceAll("\\s+", "_");
                         String fileName = UUID.randomUUID() + "_" + cleanFileName;
                         
-                        // භෞතිකව (Physically) පින්තූරය Frontend folder එකට ලියනවා
+                        
                         img.transferTo(new File(UPLOAD_DIR + File.separator + fileName));
                         
-                        // Database එකට filename එක විතරක් දානවා
+                        
                         ticket.getImageUrls().add(fileName);
                     } catch (Exception e) { 
                         System.err.println("Upload Error: " + e.getMessage());
@@ -70,12 +65,12 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
         
-        // Technician කෙනෙක් පවරනවා නම්
+        ම්
         if (techId != null && !techId.isEmpty()) {
             ticket.setAssignedTechnicianId(techId);
         }
         
-        // විසඳුම් හෝ ප්‍රතික්ෂේපිත හේතු සටහන් කිරීම
+        
         if ("RESOLVED".equals(status)) {
             ticket.setResolutionNotes(note);
         } else if ("REJECTED".equals(status)) {

@@ -7,7 +7,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1500); // ලෝඩර් එක චෙක් කිරීමට
+    setTimeout(() => setLoading(false), 1500); // 
   }, []);
 
   if (loading) return <Loader />;

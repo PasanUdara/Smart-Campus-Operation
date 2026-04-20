@@ -5,7 +5,7 @@ export const createTicket = (data) => axios.post(API, data);
 export const getAllTickets = () => axios.get(API);
 export const deleteTicket = (id) => axios.delete(`${API}/${id}`);
 
-// Status, Assignment සහ Resolution Notes සඳහා
+// Status, Assignment සහ Resolution Notes 
 export const updateStatus = (id, status, note, techId) => 
     axios.put(`${API}/${id}`, null, { params: { status, note, techId } });
 
