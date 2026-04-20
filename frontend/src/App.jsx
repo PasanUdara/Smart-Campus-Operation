@@ -1,16 +1,22 @@
-import { useState } from 'react'
-import './App.css'
-import Home from './pages/Home'
-import BookingManager from './Components/Bookings/BookingManager'
+
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <Home/>
-    </>
-  )
+    <Router>
+      <div className="bg-zinc-950 min-h-screen">
+        <Header />
+        <main>
+           <AppRoutes />
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
