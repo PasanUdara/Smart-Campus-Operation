@@ -17,22 +17,26 @@ public class TicketService {
 
     private final String UPLOAD_DIR = Paths.get("uploads").toAbsolutePath().toString();
 
-    public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, MultipartFile[] images) {
+    public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, 
+                             String name, String sId, String email, String bld, MultipartFile[] images) {
         Ticket ticket = new Ticket();
         ticket.setResourceId(resId);
         ticket.setCategory(cat);
         ticket.setDescription(desc);
         ticket.setPriority(prio);
         ticket.setContactDetails(contact);
+        ticket.setReporterName(name);
+        ticket.setStudentId(sId);
+        ticket.setEmail(email);
+        ticket.setBuilding(bld);
 
         if (images != null) {
             File folder = new File(UPLOAD_DIR);
             if (!folder.exists()) folder.mkdirs();
-            int limit = Math.min(images.length, 3);
-            for (int i = 0; i < limit; i++) {
+            for (MultipartFile img : images) {
                 try {
-                    String fileName = UUID.randomUUID() + "_" + images[i].getOriginalFilename();
-                    images[i].transferTo(new File(UPLOAD_DIR + File.separator + fileName));
+                    String fileName = UUID.randomUUID() + "_" + img.getOriginalFilename();
+                    img.transferTo(new File(UPLOAD_DIR + File.separator + fileName));
                     ticket.getImageUrls().add(fileName);
                 } catch (Exception e) { e.printStackTrace(); }
             }
@@ -45,9 +49,9 @@ public class TicketService {
     public Ticket updateStatus(String id, String status, String note, String techId) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
-        if (techId != null) ticket.setAssignedTechnicianId(techId);
-        if (status.equals("RESOLVED")) ticket.setResolutionNotes(note);
-        if (status.equals("REJECTED")) ticket.setRejectedReason(note);
+        if (techId != null && !techId.isEmpty()) ticket.setAssignedTechnicianId(techId);
+        if ("RESOLVED".equals(status)) ticket.setResolutionNotes(note);
+        if ("REJECTED".equals(status)) ticket.setRejectedReason(note);
         return ticketRepository.save(ticket);
     }
 
@@ -60,6 +64,24 @@ public class TicketService {
         c.setTimestamp(new Date());
         ticket.getComments().add(c);
         ticketRepository.save(ticket);
+    }
+
+    // ✅ FIXED: Comment Edit Logic
+    public void editComment(String tId, String cId, String authId, String newText) {
+        Ticket ticket = ticketRepository.findById(tId).orElseThrow();
+        boolean isUpdated = false;
+        for (Comment c : ticket.getComments()) {
+            // ID එක සහ AuthorID එක දෙකම මැච් වෙනවාද බලනවා
+            if (c.getId().equals(cId) && c.getAuthorId().equals(authId)) {
+                c.setText(newText);
+                c.setTimestamp(new Date());
+                isUpdated = true;
+                break;
+            }
+        }
+        if (isUpdated) {
+            ticketRepository.save(ticket);
+        }
     }
 
     public void deleteComment(String tId, String cId) {

@@ -19,9 +19,11 @@ public class TicketController {
     public Ticket create(
             @RequestParam("resourceId") String resId, @RequestParam("category") String cat,
             @RequestParam("description") String desc, @RequestParam("priority") String prio,
-            @RequestParam("contactDetails") String contact,
+            @RequestParam("contactDetails") String contact, @RequestParam("reporterName") String name,
+            @RequestParam("studentId") String sId, @RequestParam("email") String email,
+            @RequestParam("building") String bld,
             @RequestParam(value = "images", required = false) MultipartFile[] images) {
-        return ticketService.saveTicket(resId, cat, desc, prio, contact, images);
+        return ticketService.saveTicket(resId, cat, desc, prio, contact, name, sId, email, bld, images);
     }
 
     @GetMapping
@@ -37,6 +39,12 @@ public class TicketController {
     @PostMapping("/{id}/comments")
     public void addComment(@PathVariable String id, @RequestBody Map<String, String> body) {
         ticketService.addComment(id, body.get("authorId"), body.get("text"));
+    }
+
+    // ✅ FIXED: PUT Mapping for comments
+    @PutMapping("/{id}/comments/{commentId}")
+    public void editComment(@PathVariable String id, @PathVariable String commentId, @RequestBody Map<String, String> body) {
+        ticketService.editComment(id, commentId, body.get("authorId"), body.get("text"));
     }
 
     @DeleteMapping("/{id}/comments/{commentId}")
