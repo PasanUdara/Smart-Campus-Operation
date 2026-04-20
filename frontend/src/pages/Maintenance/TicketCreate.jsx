@@ -49,7 +49,6 @@ const TicketCreate = () => {
     }
   };
 
-  // ✅ FIXED: Edit Comment Function
   const handleEditComment = async (tId, cId, oldText) => {
     const newText = prompt("Update Transmission Log:", oldText);
     if (newText && newText.trim() !== "" && newText !== oldText) {
@@ -80,13 +79,26 @@ const TicketCreate = () => {
           </h2>
           {tickets.map(t => (
             <div key={t.id} className="bg-zinc-900/20 border border-zinc-800 p-6 rounded-[2rem] space-y-6 hover:border-yellow-400/30 transition-all shadow-xl backdrop-blur-sm">
+              
+              {/* ✅ FIXED IMAGE PATH FOR GOLDEN SHORTCUT */}
+              {t.imageUrls && t.imageUrls.length > 0 && (
+                <div className="relative h-48 w-full overflow-hidden rounded-3xl border border-zinc-800">
+                  <img 
+                    src={`/uploads/${t.imageUrls[0]}`} 
+                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-105" 
+                    alt="incident"
+                    onError={(e) => { e.target.src = "https://via.placeholder.com/400x200?text=Image+Not+Found"; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+              )}
+
               <div className="flex justify-between items-start">
                 <h4 className="text-xl font-black italic uppercase tracking-tight">{t.resourceId}</h4>
                 <span className="bg-yellow-400 text-black px-3 py-1 rounded-lg text-[8px] font-black uppercase">{t.status}</span>
               </div>
               <p className="text-zinc-500 text-xs leading-relaxed italic">"{t.description}"</p>
               
-              {/* Comment Ownership & Feed Section */}
               <div className="bg-black/40 p-5 rounded-2xl border border-zinc-800/40 space-y-4">
                 <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest border-b border-zinc-800/50 pb-2">Comms Discussion Thread</p>
                 <div className="space-y-3 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
@@ -94,8 +106,6 @@ const TicketCreate = () => {
                     <div key={c.id} className="group/item bg-zinc-800/10 p-3 rounded-xl border-l-2 border-yellow-400/30">
                         <div className="flex justify-between items-start mb-1">
                             <span className="text-yellow-400 font-bold text-[10px] uppercase">{c.authorId}</span>
-                            
-                            {/* ✅ Ownership logic: පෙන්වන්නේ තමන්ගේ කමෙන්ට් වලට විතරයි */}
                             {c.authorId === currentUserId && (
                                 <div className="flex gap-2 opacity-0 group-hover/item:opacity-100 transition-all">
                                     <button onClick={() => handleEditComment(t.id, c.id, c.text)} className="text-[8px] font-black uppercase text-zinc-500 hover:text-yellow-400">Edit</button>
@@ -115,7 +125,7 @@ const TicketCreate = () => {
           ))}
         </div>
 
-        {/* RIGHT SIDE: REPORT FORM (REDUCED SIZE AS REQUESTED) */}
+        {/* RIGHT SIDE: REPORT FORM */}
         <div className="lg:col-span-7">
           <div className="bg-zinc-900/30 border border-zinc-800 p-8 md:p-12 rounded-[3.5rem] backdrop-blur-2xl border-t-yellow-400/20 shadow-2xl sticky top-10">
             <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-8">File <span className="text-yellow-400">Report.</span></h2>
