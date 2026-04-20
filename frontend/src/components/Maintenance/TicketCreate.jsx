@@ -12,7 +12,6 @@ const TicketCreate = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  // 🔴 වැදගත්: මෙය පසුව ඔයාගේ Login එකේ Student ID එකට සමාන කරන්න (උදා: IT21000000)
   const currentUserId = "student-123"; 
 
   useEffect(() => { loadTickets(); }, []);
@@ -72,7 +71,6 @@ const TicketCreate = () => {
     <div className="min-h-screen bg-[#050505] p-4 md:p-10 font-sans text-white selection:bg-yellow-400 overflow-x-hidden">
       <div className="max-w-[1700px] mx-auto grid lg:grid-cols-12 gap-10">
         
-        {/* LEFT SIDE: FEED */}
         <div className="lg:col-span-5 space-y-6 max-h-[90vh] overflow-y-auto pr-4 custom-scrollbar">
           <h2 className="text-3xl font-black italic uppercase flex items-center gap-3">
             <span className="w-2 h-8 bg-yellow-400 rounded-full shadow-[0_0_15px_rgba(250,204,21,0.4)]"></span> Live Stream.
@@ -80,7 +78,6 @@ const TicketCreate = () => {
           {tickets.map(t => (
             <div key={t.id} className="bg-zinc-900/20 border border-zinc-800 p-6 rounded-[2rem] space-y-6 hover:border-yellow-400/30 transition-all shadow-xl backdrop-blur-sm">
               
-              {/* ✅ FIXED IMAGE PATH FOR GOLDEN SHORTCUT */}
               {t.imageUrls && t.imageUrls.length > 0 && (
                 <div className="relative h-48 w-full overflow-hidden rounded-3xl border border-zinc-800">
                   <img 
@@ -125,7 +122,6 @@ const TicketCreate = () => {
           ))}
         </div>
 
-        {/* RIGHT SIDE: REPORT FORM */}
         <div className="lg:col-span-7">
           <div className="bg-zinc-900/30 border border-zinc-800 p-8 md:p-12 rounded-[3.5rem] backdrop-blur-2xl border-t-yellow-400/20 shadow-2xl sticky top-10">
             <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-8">File <span className="text-yellow-400">Report.</span></h2>

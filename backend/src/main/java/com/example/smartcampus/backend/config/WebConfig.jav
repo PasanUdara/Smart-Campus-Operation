@@ -12,16 +12,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // වර්තමාන වැඩ කරන directory එකේ තියෙන uploads ෆෝල්ඩර් එකේ path එක ගන්නවා
+        
         String uploadPath = Paths.get("uploads").toAbsolutePath().toString();
         
-        // Windows වල path එක නිවැරදිව සෑදීම
+        
         if (!uploadPath.endsWith(File.separator)) {
             uploadPath += File.separator;
         }
 
-        // http://localhost:8080/uploads/** හරහා එන request, 
-        // පරිගණකයේ තියෙන "file:D:/.../uploads/" folder එකට යොමු කරනවා
+     
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadPath)
                 .setCachePeriod(0);
