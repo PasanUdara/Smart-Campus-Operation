@@ -4,15 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 const TicketCreate = () => {
   const [form, setForm] = useState({
-    resourceId: '',
-    building: 'Main Building',
-    category: 'Electrical',
-    priority: 'LOW',
-    description: '',
-    reporterName: '',
-    studentId: '',
-    contactDetails: '',
-    email: ''
+    resourceId: '', building: 'Main Building', category: 'Electrical',
+    priority: 'LOW', description: '', reporterName: '',
+    studentId: '', contactDetails: '', email: ''
   });
   
   const [tickets, setTickets] = useState([]);
@@ -24,8 +18,12 @@ const TicketCreate = () => {
   useEffect(() => { loadTickets(); }, []);
 
   const loadTickets = async () => {
-    const res = await getAllTickets();
-    setTickets(res.data);
+    try {
+      const res = await getAllTickets();
+      setTickets(res.data);
+    } catch (err) { 
+      console.error("Transmission Error:", err); 
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -37,18 +35,23 @@ const TicketCreate = () => {
 
     try {
       await createTicket(data);
-      alert("🚀 Incident Reported Successfully!");
+      alert("⚡ SYSTEM UPDATE: Incident successfully broadcasted!");
+      setForm({
+        resourceId: '', building: 'Main Building', category: 'Electrical',
+        priority: 'LOW', description: '', reporterName: '',
+        studentId: '', contactDetails: '', email: ''
+      });
+      setImages([]);
       loadTickets();
-      // Reset form logic if needed
     } catch (err) {
-      alert("❌ Error placing ticket.");
+      alert("🚨 CRITICAL ERROR: Uplink failed.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleUserComment = async (id) => {
-    const text = prompt("Add your feedback on this incident:");
+    const text = prompt("UPLINK: Enter your feedback note...");
     if (text) {
       await addComment(id, currentUserId, text);
       loadTickets();
@@ -56,48 +59,73 @@ const TicketCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 p-4 md:p-10 font-sans text-white selection:bg-yellow-400 selection:text-black">
-      <div className="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-12">
+    <div className="min-h-screen bg-[#050505] p-4 md:p-10 font-sans text-white selection:bg-yellow-400 selection:text-black">
+      
+      {/* Subtle Grid Background Effect */}
+      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
+
+      <div className="max-w-[1700px] mx-auto grid lg:grid-cols-12 gap-10 relative z-10">
         
-        {/* 🟡 LEFT SIDE: LIVE CAMPUS FEED (Community Transparency) */}
-        <div className="lg:col-span-6 space-y-8 overflow-y-auto max-h-[90vh] pr-4 custom-scrollbar">
-          <div className="flex items-center gap-4 mb-10">
-            <div className="w-2 h-10 bg-yellow-400 rounded-full"></div>
-            <div>
-              <h2 className="text-4xl font-black uppercase italic tracking-tighter">Live <span className="text-yellow-400">Feed.</span></h2>
-              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">Community Transparency Portal</p>
-            </div>
+        {/* 🟡 LEFT SIDE: LIVE OPERATIONS FEED (Transparency Hub) */}
+        <div className="lg:col-span-5 space-y-6 max-h-[90vh] overflow-y-auto pr-4 custom-scrollbar">
+          <div className="sticky top-0 bg-[#050505]/90 backdrop-blur-xl pb-6 z-20 border-b border-zinc-900 mb-6">
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase leading-none flex items-center gap-3">
+              <span className="w-2 h-8 bg-yellow-400 rounded-full"></span>
+              Live <span className="text-yellow-400 font-light">Operations.</span>
+            </h2>
+            <p className="text-zinc-600 text-[9px] font-bold uppercase tracking-[0.4em] mt-3 ml-5">Network Transparency & Public Log</p>
           </div>
           
           {tickets.length === 0 ? (
-             <div className="bg-zinc-900/30 border border-zinc-800 p-10 rounded-[2rem] text-center italic text-zinc-700">No active incidents reported.</div>
+             <div className="border border-zinc-900/50 p-12 rounded-[2rem] text-center italic text-zinc-800 font-bold uppercase text-[10px] tracking-widest">No active transmissions detected.</div>
           ) : (
             tickets.map(t => (
-              <div key={t.id} className="group bg-zinc-900/40 border border-zinc-800 rounded-[2.5rem] p-8 hover:border-yellow-400/20 transition-all duration-500 hover:shadow-2xl hover:shadow-yellow-400/5">
-                <div className="flex flex-col md:flex-row gap-6">
-                  {t.imageUrls?.[0] && (
-                    <div className="relative overflow-hidden rounded-2xl w-full md:w-32 h-32 border border-zinc-800">
-                        <img src={`http://localhost:8080/uploads/${t.imageUrls[0]}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="incident" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xl font-black text-white uppercase italic tracking-tight">{t.resourceId}</h4>
-                      <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${t.status === 'OPEN' ? 'bg-yellow-400 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                        {t.status}
-                      </span>
-                    </div>
-                    <p className="text-zinc-500 text-xs leading-relaxed mb-4">{t.description.substring(0, 100)}...</p>
-                    
-                    <div className="flex items-center justify-between mt-6">
-                      <div className="flex items-center gap-4">
-                        <button onClick={() => handleUserComment(t.id)} className="bg-zinc-800 hover:bg-yellow-400 hover:text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all">
-                          💬 Feedback
-                        </button>
-                        <div className="flex text-yellow-500 text-[10px] tracking-widest">⭐⭐⭐⭐⭐</div>
+              <div key={t.id} className="group relative bg-zinc-900/20 border border-zinc-800/60 rounded-[2rem] overflow-hidden hover:border-yellow-400/40 transition-all duration-500 backdrop-blur-sm shadow-xl">
+                <div className="p-6 md:p-8 space-y-6">
+                  
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {t.imageUrls?.[0] && (
+                      <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl border border-zinc-800">
+                          <img src={`http://localhost:8080/uploads/${t.imageUrls[0]}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="incident" />
                       </div>
-                      <span className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest">{new Date(t.createdAt).toLocaleDateString()}</span>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-xl font-black text-white italic tracking-tight">{t.resourceId}</h4>
+                        <span className={`px-3 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest ${t.status === 'OPEN' ? 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.3)]' : 'bg-emerald-500 text-white'}`}>
+                          {t.status}
+                        </span>
+                      </div>
+                      <p className="text-zinc-500 text-xs leading-relaxed line-clamp-2 italic font-medium opacity-80">"{t.description}"</p>
                     </div>
+                  </div>
+
+                  {/* 💬 ALL COMMENTS BLOCK (Enhanced Scrollable Section) */}
+                  <div className="space-y-3 bg-black/40 p-5 rounded-2xl border border-zinc-800/40">
+                    <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest border-b border-zinc-800/50 pb-2">Centralized Discussion Thread</p>
+                    <div className="max-h-32 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                      {t.comments && t.comments.length > 0 ? (
+                        t.comments.map(c => (
+                          <div key={c.id} className="text-[10px] bg-zinc-800/20 p-2 rounded-lg border-l-2 border-yellow-400/30">
+                            <div className="flex justify-between mb-1">
+                              <span className="text-yellow-400 font-bold uppercase tracking-tighter">{c.authorId}</span>
+                              <span className="text-zinc-600 text-[8px]">{new Date(c.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <p className="text-zinc-400 leading-normal italic">{c.text}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-[9px] text-zinc-700 italic">No feedback logged in this thread yet.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4">
+                      <button onClick={() => handleUserComment(t.id)} className="flex items-center gap-2 bg-zinc-800/50 hover:bg-yellow-400 hover:text-black px-4 py-2 rounded-xl transition-all group/btn">
+                          <span className="text-sm">💬</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest">Append Note</span>
+                      </button>
+                      <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">{t.building} // {new Date(t.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
@@ -105,105 +133,128 @@ const TicketCreate = () => {
           )}
         </div>
 
-        {/* 🖤 RIGHT SIDE: ENHANCED REPORT FORM (The Master Form) */}
-        <div className="lg:col-span-6">
-          <div className="bg-zinc-900 border border-zinc-800 p-10 md:p-14 rounded-[3.5rem] shadow-2xl relative overflow-hidden sticky top-10">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/5 blur-[80px] rounded-full"></div>
+        {/* ⚡ RIGHT SIDE: PREMIUM REPORTING CONSOLE */}
+        <div className="lg:col-span-7">
+          <div className="bg-zinc-900/30 border border-zinc-800/80 p-8 md:p-14 rounded-[3.5rem] backdrop-blur-2xl shadow-2xl relative overflow-hidden sticky top-10 border-t-yellow-400/20">
             
-            <div className="mb-12">
-              <div className="inline-block bg-yellow-400 text-black px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-4 italic">System Entry Required</div>
-              <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">Report <span className="text-yellow-400">Incident.</span></h2>
-              <p className="text-zinc-500 mt-2 text-sm">Fill the parameters below to initiate the maintenance sequence.</p>
+            <div className="mb-10">
+              <div className="inline-block border-l-4 border-yellow-400 pl-4 mb-4">
+                <span className="text-yellow-400 font-black text-[9px] tracking-[0.4em] uppercase block mb-1">Incident Management</span>
+                {/* DECREASED HEADER SIZE AS REQUESTED */}
+                <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter leading-none">
+                  File <span className="text-yellow-400">Report.</span>
+                </h2>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              {/* Identity Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* identity Section */}
+              <div className="grid md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Reporter Name</label>
-                  <input type="text" placeholder="Full Name" className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm" 
-                    onChange={e => setForm({...form, reporterName: e.target.value})} required />
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Full Identity Name</label>
+                  <input type="text" placeholder="CHANKA EKANAYAKA" className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs" 
+                    value={form.reporterName} onChange={e => setForm({...form, reporterName: e.target.value})} required />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Student ID (IT NO)</label>
-                  <input type="text" placeholder="IT21XXXXXX" className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm" 
-                    onChange={e => setForm({...form, studentId: e.target.value})} required />
-                </div>
-              </div>
-
-              {/* Contact Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Contact Number</label>
-                  <input type="text" placeholder="07XXXXXXXX" className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm" 
-                    onChange={e => setForm({...form, contactDetails: e.target.value})} required />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Official Email</label>
-                  <input type="email" placeholder="name@sliit.lk" className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm" 
-                    onChange={e => setForm({...form, email: e.target.value})} required />
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Student ID (IT NO)</label>
+                  <input type="text" placeholder="IT2XXXXXXX" className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs" 
+                    value={form.studentId} onChange={e => setForm({...form, studentId: e.target.value})} required />
                 </div>
               </div>
 
-              {/* Location & Category Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Communication Row */}
+              <div className="grid md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Location/Asset ID</label>
-                  <input type="text" placeholder="e.g. Lab 01 - PC 05" className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm" 
-                    onChange={e => setForm({...form, resourceId: e.target.value})} required />
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Direct Contact</label>
+                  <input type="text" placeholder="07XXXXXXXX" className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs" 
+                    value={form.contactDetails} onChange={e => setForm({...form, contactDetails: e.target.value})} required />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Building Block</label>
-                  <select className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm appearance-none" 
-                    onChange={e => setForm({...form, building: e.target.value})}>
-                    <option value="Main Building">Main Building</option>
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Official Email</label>
+                  <input type="email" placeholder="name@sliit.lk" className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs" 
+                    value={form.email} onChange={e => setForm({...form, email: e.target.value})} required />
+                </div>
+              </div>
+
+              {/* Hardware Location Section */}
+              <div className="grid md:grid-cols-3 gap-5">
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Location / Zone ID</label>
+                  <input type="text" placeholder="e.g. Lab 04 - Server 01" className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs" 
+                    value={form.resourceId} onChange={e => setForm({...form, resourceId: e.target.value})} required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Building</label>
+                  <select className="w-full p-4 bg-black/40 text-white rounded-2xl border border-zinc-800 outline-none focus:border-yellow-400 font-bold text-xs appearance-none" 
+                    value={form.building} onChange={e => setForm({...form, building: e.target.value})}>
+                    <option value="Main Building">Main Block</option>
                     <option value="New Faculty">New Faculty</option>
-                    <option value="Auditorium">Auditorium Hub</option>
-                    <option value="Hostels">University Hostels</option>
+                    <option value="Auditorium">Auditorium</option>
                   </select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Description</label>
-                <textarea placeholder="Provide details of the failure..." className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 outline-none focus:border-yellow-400 transition-all font-bold text-sm h-32" 
-                  onChange={e => setForm({...form, description: e.target.value})} required></textarea>
+                <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-4">Incident Log (Description)</label>
+                <textarea placeholder="Describe the failure..." className="w-full p-5 bg-black/40 text-white rounded-[2rem] border border-zinc-800 outline-none focus:border-yellow-400 transition-all font-bold text-xs h-32 custom-scrollbar" 
+                  value={form.description} onChange={e => setForm({...form, description: e.target.value})} required></textarea>
               </div>
 
-              {/* Media Upload */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                 <div className="p-6 border-2 border-dashed border-zinc-700 rounded-3xl text-center bg-zinc-950/20 hover:border-yellow-400 transition-all cursor-pointer relative group">
-                    <input type="file" multiple className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => setImages(Array.from(e.target.files).slice(0, 3))} />
-                    <div className="text-zinc-600 group-hover:text-yellow-400">
-                        <span className="text-2xl">📸</span>
-                        <p className="text-[9px] mt-2 font-black uppercase tracking-widest">{images.length > 0 ? `${images.length} Files Ready` : 'Attach Photos'}</p>
+              {/* Media & Action Section */}
+              <div className="grid md:grid-cols-2 gap-8 items-end">
+                 <div className="relative p-6 border-2 border-dashed border-zinc-800 rounded-3xl text-center bg-black/20 hover:border-yellow-400/50 transition-all cursor-pointer">
+                    <input type="file" multiple className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={e => setImages(Array.from(e.target.files).slice(0, 3))} />
+                    <div className="flex flex-col items-center">
+                        <span className="text-xl mb-2">📸</span>
+                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-600">
+                          {images.length > 0 ? `${images.length} Evidence Logs Attached` : 'Attach Evidence'}
+                        </p>
                     </div>
                  </div>
-                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-2">Category</label>
-                    <select className="w-full p-4 bg-zinc-800/50 text-white rounded-2xl border border-zinc-700 font-bold text-sm outline-none" 
-                        onChange={e => setForm({...form, category: e.target.value})}>
-                        <option value="Electrical">Electrical</option>
-                        <option value="Plumbing">Plumbing</option>
-                        <option value="Network">Network/IT</option>
-                        <option value="Other">Other Issues</option>
-                    </select>
+                 <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                        <label className="text-[8px] font-black text-zinc-600 uppercase ml-2">Priority</label>
+                        <select className="w-full p-3 bg-black/40 text-yellow-400 rounded-xl border border-zinc-800 font-black text-[9px] uppercase tracking-widest outline-none" 
+                            value={form.priority} onChange={e => setForm({...form, priority: e.target.value})}>
+                            <option value="LOW">Low</option>
+                            <option value="MEDIUM">Med</option>
+                            <option value="HIGH">High</option>
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[8px] font-black text-zinc-600 uppercase ml-2">Category</label>
+                        <select className="w-full p-3 bg-black/40 text-white rounded-xl border border-zinc-800 font-bold text-[9px] uppercase tracking-widest outline-none" 
+                            value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Network">IT</option>
+                        </select>
+                    </div>
                  </div>
               </div>
 
-              <button type="submit" disabled={loading} className="w-full bg-yellow-400 text-black p-5 rounded-[1.8rem] font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-yellow-400/10 hover:bg-yellow-500 transition-all active:scale-95 flex justify-center items-center gap-3 mt-4">
-                {loading ? <div className="w-5 h-5 border-2 border-black border-t-transparent animate-spin rounded-full"></div> : 'Initiate Maintenance Request'}
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full group relative overflow-hidden bg-yellow-400 text-black p-5 rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-xl hover:bg-yellow-500 transition-all flex justify-center items-center gap-4 mt-4"
+              >
+                {loading ? "TRANSMITTING DATA..." : "SUBMIT REPORT"}
+                <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* Global CSS for Scrollbar & High-End Look */}
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #eab308; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #facc15; }
+        input::placeholder, textarea::placeholder { color: #222; font-weight: 900; text-transform: uppercase; font-size: 9px; letter-spacing: 0.1em; }
+        select { cursor: pointer; }
       `}</style>
     </div>
   );
