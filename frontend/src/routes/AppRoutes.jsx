@@ -2,6 +2,12 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';  // Nisidu- Import ProtectedRoute
 import OAuthCallback from '../pages/OAuthCallback';
+
+// ඔයාගේ Maintenance Pages Import කරගැනීම
+
+import ResourceList from "../pages/Resources/ResourceList";
+import ResourceCreate from "../pages/Resources/ResourceCreate";
+import ResourceEdit from "../pages/Resources/ResourceEdit";
 // 🏠 Maintenance Pages Import (Path Changed to components)
 import Home from '../pages/Home';
 import Login from '../pages/Login';  // Nisidu- Import Login page
@@ -32,6 +38,12 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
+      {/* අනාගතයේදී අනිත් සාමාජිකයන්ගේ පේජ් මෙතනට ඇඩ් කළ හැක */}
+      {/* <Route path="/assets" element={<AssetCatalogue />} /> */}
+
+      <Route path="/resources" element={<ResourceList />} />
+      <Route path="/resources/create" element={<ResourceCreate />} />
+      <Route path="/resources/edit/:id" element={<ResourceEdit />} />
       
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
