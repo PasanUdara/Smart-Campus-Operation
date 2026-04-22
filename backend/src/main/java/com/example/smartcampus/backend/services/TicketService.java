@@ -15,11 +15,14 @@ public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Autowired
+    private NotificationService notificationService;  // ADD THIS
+
   
     private final String UPLOAD_DIR = "D:\\Projects\\Smart-Campus-Operation\\frontend\\public\\uploads";
 
     public Ticket saveTicket(String resId, String cat, String desc, String prio, String contact, 
-                             String name, String sId, String email, String bld, MultipartFile[] images) {
+                             String name, String sId, String email, String bld, MultipartFile[] images,String createdBy, String createdByEmail) {
         Ticket ticket = new Ticket();
         ticket.setResourceId(resId);
         ticket.setCategory(cat);
@@ -30,6 +33,8 @@ public class TicketService {
         ticket.setStudentId(sId);
         ticket.setEmail(email);
         ticket.setBuilding(bld);
+         ticket.setCreatedBy(createdBy);           // NEW: Set user ID from JWT
+        ticket.setCreatedByEmail(createdByEmail); // NEW: Set user email from JWT
 
         if (images != null) {
             
@@ -54,8 +59,25 @@ public class TicketService {
                 }
             }
         }
-        return ticketRepository.save(ticket);
+
+        Ticket savedTicket = ticketRepository.save(ticket);  // CHANGE THIS LINE
+    
+    // ADD THIS NOTIFICATION BLOCK
+    if (createdBy != null && !createdBy.isEmpty()) {
+        String message = "Your ticket for " + resId + " has been created. Category: " + cat;
+        notificationService.sendNotification(
+            createdBy,
+            "Ticket Created",
+            message,
+            "TICKET",
+            savedTicket.getId()
+        );
     }
+    
+    return savedTicket;  // CHANGE THIS TO RETURN savedTicket instead of ticket
+}
+        
+    
 
     public List<Ticket> getAllTickets() { 
         return ticketRepository.findAll(); 
@@ -64,8 +86,7 @@ public class TicketService {
     public Ticket updateStatus(String id, String status, String note, String techId) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
-        
-        ම්
+
         if (techId != null && !techId.isEmpty()) {
             ticket.setAssignedTechnicianId(techId);
         }
@@ -77,7 +98,24 @@ public class TicketService {
             ticket.setRejectedReason(note);
         }
         
-        return ticketRepository.save(ticket);
+        Ticket updatedTicket = ticketRepository.save(ticket);  // CHANGE THIS LINE
+    
+    // ADD THIS NOTIFICATION BLOCK
+    if (ticket.getCreatedBy() != null && !ticket.getCreatedBy().isEmpty()) {
+        String message = "Your ticket #" + id + " status has been updated to: " + status;
+        if (note != null && !note.isEmpty()) {
+            message += ". Note: " + note;
+        }
+        notificationService.sendNotification(
+            ticket.getCreatedBy(),
+            "Ticket Status Updated",
+            message,
+            "TICKET",
+            id
+        );
+    }
+    
+    return updatedTicket;  // CHANGE THIS TO RETURN updatedTicket
     }
 
     public void addComment(String tId, String authId, String text) {

@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ADD THESE LINES to existing frontend/.gitignore:
+
+# Environment variables (CRITICAL - contains secrets!)
+.env
+.env.local
+.env.*.local
+
+# Build output
+/dist
+/build
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log

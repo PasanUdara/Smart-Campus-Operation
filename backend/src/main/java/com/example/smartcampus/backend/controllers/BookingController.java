@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.smartcampus.backend.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.smartcampus.backend.models.Booking;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import com.example.smartcampus.backend.config.JwtUtil;
 
 import java.util.List;
 
@@ -15,6 +15,9 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+       @Autowired
+    private JwtUtil jwtUtil;  // ADD THIS
 
     @GetMapping
     public List<Booking> getAllBookings() {
@@ -27,7 +30,26 @@ public class BookingController {
     }
 
     @PostMapping
-    public Booking createBooking(@RequestBody Booking booking) {
+    public Booking createBooking(@RequestBody Booking booking,
+         @RequestHeader(value = "Authorization", required = false) String authHeader) 
+         { // MODIFY THIS
+        
+        // ========== EXTRACT USER ID FROM JWT TOKEN ==========
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                String userId = jwtUtil.extractUserId(token);
+                booking.setUserId(userId);  // Override with authenticated user
+            } catch (Exception e) {
+                System.err.println("Invalid token: " + e.getMessage());
+            }
+        }
+
+          // Ensure new bookings start with PENDING status
+        if (booking.getStatus() == null || booking.getStatus().isEmpty()) {
+            booking.setStatus("PENDING");
+        }
+        // ====================================================
         return bookingService.createBooking(booking);
     }
 
