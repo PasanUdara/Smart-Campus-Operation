@@ -31,3 +31,30 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# ADD THESE LINES to existing backend/.gitignore:
+
+# Environment variables (CRITICAL - contains secrets!)
+.env
+.env.local
+.env.*.local
+
+# Maven local repository (DO NOT PUSH - huge!)
+UsersPasindu.m2repository/
+.m2/
+
+# Build output
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+.vscode/
+
+# Logs
+*.log
