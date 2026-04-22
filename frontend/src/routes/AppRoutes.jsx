@@ -7,17 +7,21 @@ import TicketList from '../pages/Maintenance/TicketList';
 import ResourceList from "../pages/Resources/ResourceList";
 import ResourceCreate from "../pages/Resources/ResourceCreate";
 import ResourceEdit from "../pages/Resources/ResourceEdit";
+// 🏠 Maintenance Pages Import (Path Changed to components)
+import Home from '../pages/Home';
+import TicketCreate from '../components/Maintenance/TicketCreate';
+import TicketList from '../components/Maintenance/TicketList';
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* පටන් ගන්න කොටම කෙලින්ම Fault Report පේජ් එකට යවමු */}
-      <Route path="/" element={<Navigate to="/report-fault" />} />
       
-      {/* User පේජ් එක: ටිකට් එකක් දාන තැන */}
+      <Route path="/" element={<Home />} />
+      
+      
       <Route path="/report-fault" element={<TicketCreate />} />
       
-      {/* Admin/Technician පේජ් එක: ටිකට් කළමනාකරණය කරන Dashboard එක */}
+      
       <Route path="/admin/tickets" element={<TicketList />} />
 
       {/* අනාගතයේදී අනිත් සාමාජිකයන්ගේ පේජ් මෙතනට ඇඩ් කළ හැක */}
@@ -26,6 +30,8 @@ const AppRoutes = () => {
       <Route path="/resources" element={<ResourceList />} />
       <Route path="/resources/create" element={<ResourceCreate />} />
       <Route path="/resources/edit/:id" element={<ResourceEdit />} />
+      
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
