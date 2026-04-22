@@ -1,0 +1,126 @@
+.resource-container {
+  padding: 30px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.resource-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.resource-header h2 {
+  color: #1e293b;
+  font-size: 28px;
+}
+
+.add-btn,
+.edit-btn,
+.delete-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.add-btn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.add-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.edit-btn {
+  background-color: #16a34a;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #15803d;
+}
+
+.delete-btn {
+  background-color: #dc2626;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #b91c1c;
+}
+
+.resource-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.resource-table th,
+.resource-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.resource-table th {
+  background-color: #1e293b;
+  color: white;
+}
+
+.resource-table tr:nth-child(even) {
+  background-color: #f1f5f9;
+}
+
+.resource-table tr:hover {
+  background-color: #e2e8f0;
+}
+
+.form-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+  color: #1e293b;
+  text-align: center;
+}
+
+.resource-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.resource-form input,
+.resource-form select,
+.resource-form button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.resource-form button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.resource-form button:hover {
+  background-color: #1d4ed8;
+}
