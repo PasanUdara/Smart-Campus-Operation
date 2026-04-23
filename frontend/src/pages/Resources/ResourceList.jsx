@@ -27,7 +27,7 @@ function ResourceList() {
     fetchResources();
   }, []);
 
-  // Delete
+  // delete
   const handleDelete = async (id) => {
     try {
       await deleteResource(id);

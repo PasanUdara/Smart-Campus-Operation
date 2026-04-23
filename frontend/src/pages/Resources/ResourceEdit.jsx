@@ -15,6 +15,7 @@ function ResourceEdit() {
     status: "ACTIVE",
   });
 
+  
   useEffect(() => {
     const fetchResource = async () => {
       try {
