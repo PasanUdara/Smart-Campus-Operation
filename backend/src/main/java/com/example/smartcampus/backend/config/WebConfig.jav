@@ -12,15 +12,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        
         String uploadPath = Paths.get("uploads").toAbsolutePath().toString();
-        
         
         if (!uploadPath.endsWith(File.separator)) {
             uploadPath += File.separator;
         }
 
-     
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadPath)
                 .setCachePeriod(0);
@@ -31,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+                .allowedOrigins("http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

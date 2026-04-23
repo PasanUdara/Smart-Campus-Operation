@@ -13,7 +13,6 @@ function ResourceList() {
   const [filterType, setFilterType] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  // Fetch all
   const fetchResources = async () => {
     try {
       const response = await getAllResources();
@@ -27,7 +26,6 @@ function ResourceList() {
     fetchResources();
   }, []);
 
-  // delete
   const handleDelete = async (id) => {
     try {
       await deleteResource(id);
@@ -37,11 +35,9 @@ function ResourceList() {
     }
   };
 
-  // Search
   const handleSearch = async () => {
     try {
       let response;
-
       if (filterType === "type") {
         response = await searchByType(searchValue);
       } else if (filterType === "location") {
@@ -51,7 +47,6 @@ function ResourceList() {
       } else {
         response = await getAllResources();
       }
-
       setResources(response.data);
     } catch (error) {
       console.error("Search error", error);
@@ -60,13 +55,10 @@ function ResourceList() {
 
   return (
     <div className="p-6 bg-black min-h-screen text-white">
-      
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-yellow-400">
           All Resources
         </h2>
-
         <Link
           to="/resources/create"
           className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition"
@@ -75,7 +67,6 @@ function ResourceList() {
         </Link>
       </div>
 
-      {/* Search Bar */}
       <div className="flex gap-3 mb-6">
         <select
           onChange={(e) => setFilterType(e.target.value)}
@@ -110,11 +101,8 @@ function ResourceList() {
         </button>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto bg-gray-900 rounded-lg shadow-lg">
         <table className="w-full text-center">
-          
-          {/* Table Head */}
           <thead className="bg-yellow-400 text-black">
             <tr>
               <th className="p-3">Name</th>
@@ -125,8 +113,6 @@ function ResourceList() {
               <th className="p-3">Actions</th>
             </tr>
           </thead>
-
-          {/* Table Body */}
           <tbody>
             {resources.map((resource) => (
               <tr
@@ -137,8 +123,6 @@ function ResourceList() {
                 <td className="p-3">{resource.type}</td>
                 <td className="p-3">{resource.capacity}</td>
                 <td className="p-3">{resource.location}</td>
-
-                {/* Status */}
                 <td className="p-3">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -150,8 +134,6 @@ function ResourceList() {
                     {resource.status}
                   </span>
                 </td>
-
-                {/* Actions */}
                 <td className="p-3 flex justify-center gap-2">
                   <Link
                     to={`/resources/edit/${resource.id}`}
@@ -159,7 +141,6 @@ function ResourceList() {
                   >
                     Edit
                   </Link>
-
                   <button
                     onClick={() => handleDelete(resource.id)}
                     className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
@@ -170,7 +151,6 @@ function ResourceList() {
               </tr>
             ))}
           </tbody>
-
         </table>
       </div>
     </div>

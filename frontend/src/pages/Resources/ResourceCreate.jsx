@@ -34,18 +34,12 @@ function ResourceCreate() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-6 text-white">
-      
-      {/* Card */}
       <div className="bg-gray-900 w-full max-w-lg p-8 rounded-xl shadow-lg">
-
-        {/* Title */}
         <h2 className="text-2xl font-bold text-yellow-400 text-center mb-6">
           Add Resource
         </h2>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
           <input
             type="text"
             name="name"
@@ -112,14 +106,12 @@ function ResourceCreate() {
             <option value="OUT_OF_SERVICE">OUT OF SERVICE</option>
           </select>
 
-          {/* Button */}
           <button
             type="submit"
             className="bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:bg-yellow-500 transition"
           >
             Save Resource
           </button>
-
         </form>
       </div>
     </div>

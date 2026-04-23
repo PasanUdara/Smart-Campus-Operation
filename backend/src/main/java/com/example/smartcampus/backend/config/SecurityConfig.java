@@ -42,8 +42,8 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**", "/api/test/**", "/login/**", "/oauth2/**").permitAll()
                 
-                // Keep these permitAll for now to test your tickets
-                .requestMatchers("/api/bookings/**", "/api/tickets/**").permitAll()
+                // Public access for testing tickets, bookings, and resources
+                .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
                 
                 // Protected endpoints
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
