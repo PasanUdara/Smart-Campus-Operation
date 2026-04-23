@@ -13,6 +13,19 @@ function ResourceList() {
   const [filterType, setFilterType] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
+  // 🔥 GET USER ROLE
+  const user = JSON.parse(localStorage.getItem("user"));
+  const roles = user?.roles || [];
+
+  const isAdmin = roles.includes("ROLE_ADMIN");
+
+  // 🔥 IMPORTANT FIX
+  const isUserOnly =
+    roles.includes("ROLE_USER") && !roles.includes("ROLE_ADMIN");
+
+  // =========================
+  // FETCH ALL
+  // =========================
   const fetchResources = async () => {
     try {
       const response = await getAllResources();
@@ -26,6 +39,9 @@ function ResourceList() {
     fetchResources();
   }, []);
 
+  // =========================
+  // DELETE (ADMIN)
+  // =========================
   const handleDelete = async (id) => {
     try {
       await deleteResource(id);
@@ -35,9 +51,13 @@ function ResourceList() {
     }
   };
 
+  // =========================
+  // SEARCH
+  // =========================
   const handleSearch = async () => {
     try {
       let response;
+
       if (filterType === "type") {
         response = await searchByType(searchValue);
       } else if (filterType === "location") {
@@ -47,26 +67,41 @@ function ResourceList() {
       } else {
         response = await getAllResources();
       }
+
       setResources(response.data);
     } catch (error) {
       console.error("Search error", error);
     }
   };
 
+  // =========================
+  // BOOK (USER ONLY)
+  // =========================
+  const handleBook = (resource) => {
+    alert(`Booking requested for: ${resource.name}`);
+  };
+
   return (
     <div className="p-6 bg-black min-h-screen text-white">
+
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-yellow-400">
           All Resources
         </h2>
-        <Link
-          to="/resources/create"
-          className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition"
-        >
-          Add Resource
-        </Link>
+
+        {/* ADMIN ONLY */}
+        {isAdmin && (
+          <Link
+            to="/resources/create"
+            className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition"
+          >
+            Add Resource
+          </Link>
+        )}
       </div>
 
+      {/* SEARCH */}
       <div className="flex gap-3 mb-6">
         <select
           onChange={(e) => setFilterType(e.target.value)}
@@ -101,6 +136,7 @@ function ResourceList() {
         </button>
       </div>
 
+      {/* TABLE */}
       <div className="overflow-x-auto bg-gray-900 rounded-lg shadow-lg">
         <table className="w-full text-center">
           <thead className="bg-yellow-400 text-black">
@@ -113,6 +149,7 @@ function ResourceList() {
               <th className="p-3">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {resources.map((resource) => (
               <tr
@@ -123,6 +160,8 @@ function ResourceList() {
                 <td className="p-3">{resource.type}</td>
                 <td className="p-3">{resource.capacity}</td>
                 <td className="p-3">{resource.location}</td>
+
+                {/* STATUS */}
                 <td className="p-3">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -134,19 +173,39 @@ function ResourceList() {
                     {resource.status}
                   </span>
                 </td>
+
+                {/* ACTIONS */}
                 <td className="p-3 flex justify-center gap-2">
-                  <Link
-                    to={`/resources/edit/${resource.id}`}
-                    className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 transition"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(resource.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
-                  >
-                    Delete
-                  </button>
+
+                  {/* ✅ ADMIN ONLY */}
+                  {isAdmin && (
+                    <>
+                      <Link
+                        to={`/resources/edit/${resource.id}`}
+                        className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
+                      >
+                        Edit
+                      </Link>
+
+                      <button
+                        onClick={() => handleDelete(resource.id)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+
+                  {/* ✅ USER ONLY */}
+                  {isUserOnly && resource.status === "ACTIVE" && (
+                    <button
+                      onClick={() => handleBook(resource)}
+                      className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
+                    >
+                      Book
+                    </button>
+                  )}
+
                 </td>
               </tr>
             ))}
