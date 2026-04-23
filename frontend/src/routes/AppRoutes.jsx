@@ -2,8 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // ඔයාගේ Maintenance Pages Import කරගැනීම
-import TicketCreate from '../pages/Maintenance/TicketCreate';
-import TicketList from '../pages/Maintenance/TicketList';
 import ResourceList from "../pages/Resources/ResourceList";
 import ResourceCreate from "../pages/Resources/ResourceCreate";
 import ResourceEdit from "../pages/Resources/ResourceEdit";
