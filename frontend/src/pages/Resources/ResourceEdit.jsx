@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getResourceById, updateResource } from "../../api/resourceApi";
-import "../../styles/Resource.css";
 
 function ResourceEdit() {
   const { id } = useParams();
@@ -48,61 +47,89 @@ function ResourceEdit() {
   };
 
   return (
-    <div className="form-container">
-      <h2>Edit Resource</h2>
+    <div className="min-h-screen bg-black flex items-center justify-center p-6 text-white">
+      
+      {/* Card */}
+      <div className="bg-gray-900 w-full max-w-lg p-8 rounded-xl shadow-lg">
 
-      <form onSubmit={handleSubmit} className="resource-form">
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-yellow-400 text-center mb-6">
+          Edit Resource
+        </h2>
 
-        <input
-          type="text"
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          required
-        />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        <input
-          type="number"
-          name="capacity"
-          value={formData.capacity}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Resource Name"
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
 
-        <input
-          type="text"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="text"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            placeholder="Type"
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
 
-        <input
-          type="text"
-          name="availabilityWindow"
-          value={formData.availabilityWindow}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="number"
+            name="capacity"
+            value={formData.capacity}
+            onChange={handleChange}
+            placeholder="Capacity"
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
 
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-        >
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="OUT_OF_SERVICE">OUT OF SERVICE</option>
-        </select>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Location"
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
 
-        <button type="submit">Update Resource</button>
-      </form>
+          <input
+            type="text"
+            name="availabilityWindow"
+            value={formData.availabilityWindow}
+            onChange={handleChange}
+            placeholder="Availability Window"
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
+
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+          >
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="OUT_OF_SERVICE">OUT OF SERVICE</option>
+          </select>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:bg-yellow-500 transition"
+          >
+            Update Resource
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }

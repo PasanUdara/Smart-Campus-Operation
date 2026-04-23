@@ -65,7 +65,7 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id).orElseThrow();
         ticket.setStatus(status);
         
-        ම්
+        
         if (techId != null && !techId.isEmpty()) {
             ticket.setAssignedTechnicianId(techId);
         }

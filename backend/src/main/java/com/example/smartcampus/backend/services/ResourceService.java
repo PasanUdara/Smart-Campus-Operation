@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ResourceService {
@@ -22,25 +21,30 @@ public class ResourceService {
         return resourceRepository.save(resource);
     }
 
-    public Optional<Resource> getResourceById(String id) {
-        return resourceRepository.findById(id);
+    public Resource getResourceById(String id) {
+        return resourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
     }
 
     public Resource updateResource(String id, Resource updatedResource) {
-        return resourceRepository.findById(id).map(resource -> {
-            resource.setName(updatedResource.getName());
-            resource.setType(updatedResource.getType());
-            resource.setCapacity(updatedResource.getCapacity());
-            resource.setLocation(updatedResource.getLocation());
-            resource.setAvailabilityWindow(updatedResource.getAvailabilityWindow());
-            resource.setStatus(updatedResource.getStatus());
+        Resource existing = resourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
 
-            return resourceRepository.save(resource);
-        }).orElseThrow(() -> new RuntimeException("Resource not found"));
+        existing.setName(updatedResource.getName());
+        existing.setType(updatedResource.getType());
+        existing.setCapacity(updatedResource.getCapacity());
+        existing.setLocation(updatedResource.getLocation());
+        existing.setAvailabilityWindow(updatedResource.getAvailabilityWindow());
+        existing.setStatus(updatedResource.getStatus());
+
+        return resourceRepository.save(existing);
     }
 
     public void deleteResource(String id) {
-        resourceRepository.deleteById(id);
+        Resource existing = resourceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
+
+        resourceRepository.delete(existing);
     }
 
     public List<Resource> getResourcesByType(String type) {
