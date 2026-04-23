@@ -1,5 +1,6 @@
 package com.example.smartcampus.backend.controllers;
 
+import com.example.smartcampus.backend.config.JwtUtil;
 import com.example.smartcampus.backend.models.Ticket;
 import com.example.smartcampus.backend.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
+    @Autowired
+    private JwtUtil jwtUtil;  
+
     @PostMapping
     public Ticket create(
             @RequestParam("resourceId") String resId, @RequestParam("category") String cat,
@@ -22,8 +26,25 @@ public class TicketController {
             @RequestParam("contactDetails") String contact, @RequestParam("reporterName") String name,
             @RequestParam("studentId") String sId, @RequestParam("email") String email,
             @RequestParam("building") String bld,
-            @RequestParam(value = "images", required = false) MultipartFile[] images) {
-        return ticketService.saveTicket(resId, cat, desc, prio, contact, name, sId, email, bld, images);
+            @RequestParam(value = "images", required = false) MultipartFile[] images,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+                // ADD THIS
+        
+        // ========== EXTRACT USER INFO FROM JWT TOKEN ==========
+        String createdBy = null;
+        String createdByEmail = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                createdBy = jwtUtil.extractUserId(token);
+                createdByEmail = jwtUtil.extractEmail(token);
+            } catch (Exception e) {
+                System.err.println("Invalid token: " + e.getMessage());
+            }
+        }
+        // ======================================================
+        
+        return ticketService.saveTicket(resId, cat, desc, prio, contact, name, sId, email, bld, images,createdBy, createdByEmail);
     }
 
     @GetMapping
@@ -37,8 +58,22 @@ public class TicketController {
     }
 
     @PostMapping("/{id}/comments")
-    public void addComment(@PathVariable String id, @RequestBody Map<String, String> body) {
-        ticketService.addComment(id, body.get("authorId"), body.get("text"));
+    public void addComment(@PathVariable String id, @RequestBody Map<String, String> body,
+        @RequestHeader(value = "Authorization", required = false) String authHeader) {
+       
+       
+            // ========== USE JWT USER ID AS AUTHOR IF AVAILABLE ==========
+        String authorId = body.get("authorId");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                authorId = jwtUtil.extractUserId(token);  // Override with authenticated user
+            } catch (Exception e) {
+                // Keep the provided authorId if token invalid
+            }
+        }
+        // =========================================================== 
+        ticketService.addComment(id, authorId, body.get("text"));
     }
 
     @PutMapping("/{id}/comments/{commentId}")

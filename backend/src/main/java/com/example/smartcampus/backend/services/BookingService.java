@@ -14,8 +14,24 @@ public class BookingService {
     @Autowired
     private BookingRepo bookingRepository;
 
-    public Booking createBooking(Booking booking) {
-        return bookingRepository.save(booking);
+        @Autowired
+    private NotificationService notificationService;  // nisidu- Inject NotificationService
+
+     public Booking createBooking(Booking booking) {
+        Booking savedBooking = bookingRepository.save(booking);
+        
+        // ADD THIS - Create notification for user
+        String message = "Your booking for " + booking.getResourceId() + 
+                         " on " + booking.getStartTime() + " has been created and is pending approval.";
+        notificationService.sendNotification(
+            booking.getUserId(),
+            "Booking Created",
+            message,
+            "BOOKING",
+            savedBooking.getId()
+        );
+        
+        return savedBooking;
     }
 
     public List<Booking> getAllBookings() {
@@ -28,6 +44,9 @@ public class BookingService {
 
     public Booking updateBooking(String id, Booking updatedBooking) {
         return bookingRepository.findById(id).map(booking -> {
+
+             String oldStatus = booking.getStatus();  // ADD THIS
+
             booking.setResourceId(updatedBooking.getResourceId());
             booking.setUserId(updatedBooking.getUserId());
             booking.setStartTime(updatedBooking.getStartTime());
@@ -36,7 +55,24 @@ public class BookingService {
             booking.setPurpose(updatedBooking.getPurpose());
             booking.setAttendees(updatedBooking.getAttendees());
             booking.setAdminRemarks(updatedBooking.getAdminRemarks());
-            return bookingRepository.save(booking);
+            Booking savedBooking = bookingRepository.save(booking);
+        
+        // ADD THIS - Send notification if status changed
+        if (oldStatus != null && !oldStatus.equals(updatedBooking.getStatus())) {
+            String message = "Your booking for " + booking.getResourceId() + 
+                             " has been " + updatedBooking.getStatus().toLowerCase();
+            notificationService.sendNotification(
+                booking.getUserId(),
+                "Booking " + updatedBooking.getStatus(),
+                message,
+                "BOOKING",
+                id
+            );
+        }
+        
+        return savedBooking;
+
+
         }).orElse(null);
     }
 

@@ -26,4 +26,7 @@ public class Ticket {
     private String rejectedReason;
     private List<Comment> comments = new ArrayList<>(); 
     private Date createdAt = new Date();
+
+     private String createdBy;      // User ID from JWT token (who created this ticket)
+    private String createdByEmail; // User email from JWT token
 }
