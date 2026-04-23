@@ -5,17 +5,12 @@ import OAuthCallback from '../pages/OAuthCallback';
 
 // ඔයාගේ Maintenance Pages Import කරගැනීම
 
-
-
 import ResourceList from "../pages/Resources/ResourceList";
 import ResourceCreate from "../pages/Resources/ResourceCreate";
 import ResourceEdit from "../pages/Resources/ResourceEdit";
 // 🏠 Maintenance Pages Import (Path Changed to components)
 import Home from '../pages/Home';
-import Login from '../pages/Login';  // Nisidu- Import Login page
-import AdminPanel from '../pages/AdminPanel';  // Nisidu- Import AdminPanel page
-import TicketCreate from '../components/Maintenance/TicketCreate';
-import TicketList from '../components/Maintenance/TicketList';
+
 
 const AppRoutes = () => {
   return (

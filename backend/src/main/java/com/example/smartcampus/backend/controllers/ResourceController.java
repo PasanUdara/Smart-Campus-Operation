@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resources")
@@ -26,8 +25,9 @@ public class ResourceController {
         return resourceService.createResource(resource);
     }
 
+    // ✅ FIXED HERE
     @GetMapping("/{id}")
-    public Optional<Resource> getResourceById(@PathVariable String id) {
+    public Resource getResourceById(@PathVariable String id) {
         return resourceService.getResourceById(id);
     }
 
