@@ -49,18 +49,17 @@ public class GoogleAuthController {
                 String name = (String) payload.get("name");
                 String providerId = payload.getSubject();
                 
-                Optional<User> existingUser = userRepository.findByEmail(email);
-                User user;
-                
-                if (existingUser.isPresent()) {
-                    user = existingUser.get();
-                    user.setLastLogin(new java.util.Date());
-                } else {
-                    // Create new user
-                    user = new User(email, name, "google", providerId);
-                    user.setActive(true);
-                    user.setCreatedAt(new java.util.Date());
-                }
+               Optional<User> existingUser = userRepository.findByEmail(email);
+
+// Check if user exists in database
+if (existingUser.isEmpty()) {
+    response.put("success", false);
+    response.put("message", "Your email is not authorized. Please contact admin to get access.");
+    return response;
+}
+
+User user = existingUser.get();
+user.setLastLogin(new java.util.Date());
                 
                 userRepository.save(user);
                 

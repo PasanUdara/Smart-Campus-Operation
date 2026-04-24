@@ -78,6 +78,10 @@ export const AuthProvider = ({ children }) => {
     const isAdmin = () => {
         return user?.roles?.includes('ROLE_ADMIN') || false;
     };
+
+    const isTechnician = () => {
+    return user?.roles?.includes('ROLE_TECHNICIAN') || false;
+};
     
     const value = {
         user,
@@ -87,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         isAdmin,
+        isTechnician,
         isAuthenticated: !!user
     };
 

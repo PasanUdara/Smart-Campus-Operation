@@ -3,7 +3,6 @@ package com.example.smartcampus.backend.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder; 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 
 import com.example.smartcampus.backend.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,11 +46,16 @@ public class SecurityConfig {
                 })
             )
             .authorizeHttpRequests(auth -> auth
+                // Allow OPTIONS preflight requests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                
+                // Public endpoints
                 .requestMatchers("/api/auth/**", "/api/test/**", "/login/**", "/oauth2/**").permitAll()
                 
-                // Allow public access for testing tickets, bookings, and resources to prevent redirects
+                // For testing (temporary - remove later)
                 .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
                 
+                // Protected endpoints
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()

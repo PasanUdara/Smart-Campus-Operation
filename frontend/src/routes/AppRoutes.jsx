@@ -20,6 +20,7 @@ import AdminBookings from '../pages/Bookings/AdminBookings';
 // Maintenance Components
 import TicketCreate from '../components/Maintenance/TicketCreate';
 import TicketList from '../components/Maintenance/TicketList';
+import TechnicianTicketList from '../components/Maintenance/TechnicianTicketList';
 
 const AppRoutes = () => {
   return (
@@ -89,6 +90,15 @@ const AppRoutes = () => {
       <Route path="/resources/create" element={<ResourceCreate />} />
       <Route path="/resources/edit/:id" element={<ResourceEdit />} />
       
+<Route 
+    path="/my-tickets" 
+    element={
+        <ProtectedRoute technicianOnly={true}>
+            <TechnicianTicketList />
+        </ProtectedRoute>
+    } 
+/>
+
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
