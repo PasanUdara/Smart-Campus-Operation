@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.smartcampus.backend.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -38,21 +39,21 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                })
+            )
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
                 .requestMatchers("/api/auth/**", "/api/test/**", "/login/**", "/oauth2/**").permitAll()
                 
-                // Public access for testing tickets, bookings, and resources
-                // .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
-
-                .requestMatchers("/api/resources/**").authenticated()
+                // Allow public access for testing tickets, bookings, and resources to prevent redirects
+                .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
                 
-                // Protected endpoints
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
-            // OAuth2 Login Configuration
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
