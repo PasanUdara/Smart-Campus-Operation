@@ -23,6 +23,15 @@ public class AuthController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // TEMPORARY - Remove after creating technician
+@PostMapping("/create-technician")
+public String createTechnician() {
+    User tech = new User("tech@smartcampus.com", "Support Technician", java.util.List.of("ROLE_USER", "ROLE_TECHNICIAN"));
+    tech.setPassword(passwordEncoder.encode("tech123"));
+    userRepository.save(tech);
+    return "Technician created! Email: tech@smartcampus.com, Password: tech123";
+}
     
     // YOUR ENDPOINT 1: POST /api/auth/login
     @PostMapping("/login")

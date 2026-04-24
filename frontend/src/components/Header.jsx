@@ -5,7 +5,7 @@ import NotificationBell from './NotificationBell';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout, isAdmin } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin,isTechnician } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -56,6 +56,18 @@ const Header = () => {
           >
             Maintenance
           </NavLink>
+
+ {/* TECHNICIAN ONLY - My Tickets */}
+          {isTechnician() && (
+            <NavLink
+              to="/my-tickets"
+              className={({ isActive }) =>
+                isActive ? "text-yellow-400" : "hover:text-yellow-400 transition"
+              }
+            >
+              My Tickets
+            </NavLink>
+          )}
 
           {/* ADMIN ONLY */}
           {isAdmin() && (

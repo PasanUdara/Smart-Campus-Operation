@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTickets, updateStatus, deleteTicket, deleteComment } from '../../api/ticketApi';
+import axios from 'axios';  
+
 
 const TicketList = () => {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedImg, setSelectedImg] = useState(null);
     const currentUserId = "admin-master"; 
+
+    const [technicians, setTechnicians] = useState([]);
+const [showTechModal, setShowTechModal] = useState(false);
+const [selectedTicketId, setSelectedTicketId] = useState(null);
 
     useEffect(() => { load(); }, []);
 
@@ -20,6 +26,23 @@ const TicketList = () => {
             setLoading(false); 
         }
     };
+
+    useEffect(() => {
+    const fetchTechnicians = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('http://localhost:8080/api/users', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Filter only users with TECHNICIAN role
+            const techs = res.data.filter(u => u.roles?.includes('ROLE_TECHNICIAN'));
+            setTechnicians(techs);
+        } catch (err) {
+            console.error("Failed to fetch technicians:", err);
+        }
+    };
+    fetchTechnicians();
+}, []);
 
     const handleWorkflowAction = async (id, stage) => {
         let note = "";
@@ -132,7 +155,15 @@ const TicketList = () => {
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 pt-8 border-t border-zinc-900">
-                                            <button onClick={() => handleWorkflowAction(t.id, 'IN_PROGRESS')} className="bg-zinc-800/50 hover:bg-blue-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800">Assign Agent</button>
+                                            <button 
+    onClick={() => {
+        setSelectedTicketId(t.id);
+        setShowTechModal(true);
+    }} 
+    className="bg-zinc-800/50 hover:bg-blue-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800"
+>
+    Assign Agent
+</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'RESOLVED')} className="bg-zinc-800/50 hover:bg-emerald-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800">Resolve</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'CLOSED')} className="bg-zinc-800/50 hover:bg-zinc-700 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800 text-zinc-500">Close Log</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'REJECTED')} className="bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-red-900/50">Reject</button>
@@ -171,6 +202,47 @@ const TicketList = () => {
                     </div>
                 )}
             </div>
+
+           {/* Technician Selection Modal */}
+{showTechModal && (
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+        <div className="bg-zinc-900 rounded-2xl p-6 w-96 border border-zinc-800">
+            <h3 className="text-xl font-bold mb-4 text-white">Select Technician</h3>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+                {technicians.length === 0 ? (
+                    <p className="text-zinc-500 text-center py-4">No technicians found. Create a technician user first.</p>
+                ) : (
+                    technicians.map(tech => (
+                        <button
+                            key={tech.id}
+                            onClick={async () => {
+                                try {
+                                    await updateStatus(selectedTicketId, 'IN_PROGRESS', null, tech.id);
+                                    alert(`Ticket assigned to ${tech.name}`);
+                                    setShowTechModal(false);
+                                    load();
+                                } catch (err) {
+                                    alert("Assignment failed: " + err.message);
+                                }
+                            }}
+                            className="w-full text-left p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition"
+                        >
+                            <p className="font-semibold text-white">{tech.name}</p>
+                            <p className="text-xs text-zinc-400">{tech.email}</p>
+                        </button>
+                    ))
+                )}
+            </div>
+            <button 
+                onClick={() => setShowTechModal(false)}
+                className="mt-4 w-full bg-zinc-800 py-2 rounded-lg hover:bg-zinc-700 text-white transition"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+)}
+
 
             {selectedImg && (
                 <div className="fixed inset-0 bg-black/98 backdrop-blur-3xl z-[100] flex justify-center items-center p-8 transition-all" onClick={() => setSelectedImg(null)}>
