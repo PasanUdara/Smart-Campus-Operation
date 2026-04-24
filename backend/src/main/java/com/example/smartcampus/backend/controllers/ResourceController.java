@@ -16,11 +16,19 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
+    // ========================================
+    // GET ALL RESOURCES → USER + ADMIN
+    // ========================================
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<Resource> getAllResources() {
         return resourceService.getAllResources();
     }
+
+    // ========================================
+    // GET RESOURCE BY ID → USER + ADMIN
+    // ========================================
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
@@ -28,41 +36,73 @@ public class ResourceController {
         return resourceService.getResourceById(id);
     }
 
+    // ========================================
+    // CREATE RESOURCE → ADMIN ONLY
+    // ========================================
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public Resource createResource(@RequestBody Resource resource) {
         return resourceService.createResource(resource);
     }
 
+    // ========================================
+    // UPDATE RESOURCE → ADMIN ONLY
+    // ========================================
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Resource updateResource(@PathVariable String id,
-                                  @RequestBody Resource resource) {
+    public Resource updateResource(
+            @PathVariable String id,
+            @RequestBody Resource resource
+    ) {
         return resourceService.updateResource(id, resource);
     }
+
+    // ========================================
+    // DELETE RESOURCE → ADMIN ONLY
+    // ========================================
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteResource(@PathVariable String id) {
         resourceService.deleteResource(id);
-        return "Deleted";
+        return "Resource deleted successfully";
     }
+
+    // ========================================
+    // SEARCH BY TYPE → USER + ADMIN
+    // ========================================
 
     @GetMapping("/type/{type}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<Resource> getResourcesByType(@PathVariable String type) {
+    public List<Resource> getResourcesByType(
+            @PathVariable String type
+    ) {
         return resourceService.getResourcesByType(type);
     }
 
+    // ========================================
+    // SEARCH BY LOCATION → USER + ADMIN
+    // ========================================
+
     @GetMapping("/location/{location}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<Resource> getResourcesByLocation(@PathVariable String location) {
+    public List<Resource> getResourcesByLocation(
+            @PathVariable String location
+    ) {
         return resourceService.getResourcesByLocation(location);
     }
 
+    // ========================================
+    // SEARCH BY CAPACITY → USER + ADMIN
+    // ========================================
+
     @GetMapping("/capacity/{capacity}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<Resource> getResourcesByCapacity(@PathVariable int capacity) {
+    public List<Resource> getResourcesByCapacity(
+            @PathVariable int capacity
+    ) {
         return resourceService.getResourcesByCapacity(capacity);
     }
 }

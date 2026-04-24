@@ -13,20 +13,42 @@ public class Resource {
     private String type;
     private int capacity;
     private String location;
+
+    // Existing feature (keep)
     private String availabilityWindow;
+
+    // New feature → Availability Calendar
+    private String availableDays;   // Example: Mon - Fri
+    private String availableTime;   // Example: 8AM - 5PM
+
     private ResourceStatus status;
 
     public Resource() {
     }
 
-    public Resource(String name, String type, int capacity, String location, String availabilityWindow, ResourceStatus status) {
+    public Resource(
+            String name,
+            String type,
+            int capacity,
+            String location,
+            String availabilityWindow,
+            String availableDays,
+            String availableTime,
+            ResourceStatus status
+    ) {
         this.name = name;
         this.type = type;
         this.capacity = capacity;
         this.location = location;
         this.availabilityWindow = availabilityWindow;
+        this.availableDays = availableDays;
+        this.availableTime = availableTime;
         this.status = status;
     }
+
+    // =========================
+    // GETTERS & SETTERS
+    // =========================
 
     public String getId() {
         return id;
@@ -74,6 +96,22 @@ public class Resource {
 
     public void setAvailabilityWindow(String availabilityWindow) {
         this.availabilityWindow = availabilityWindow;
+    }
+
+    public String getAvailableDays() {
+        return availableDays;
+    }
+
+    public void setAvailableDays(String availableDays) {
+        this.availableDays = availableDays;
+    }
+
+    public String getAvailableTime() {
+        return availableTime;
+    }
+
+    public void setAvailableTime(String availableTime) {
+        this.availableTime = availableTime;
     }
 
     public ResourceStatus getStatus() {
