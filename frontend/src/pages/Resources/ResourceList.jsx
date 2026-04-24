@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getAllResources,
   deleteResource,
@@ -104,8 +104,10 @@ function ResourceList() {
   // BOOK RESOURCE (USER)
   // =========================
 
+  const navigate = useNavigate();
+
   const handleBook = (resource) => {
-    alert(`Booking resource: ${resource.name}`);
+    navigate(`/booking?resourceId=${resource.id}`);
   };
 
   // =========================
