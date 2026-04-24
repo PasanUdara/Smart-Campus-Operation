@@ -12,11 +12,15 @@ public class Booking {
     @Id
     private String id;
     private String resourceId;
+    private String resourceName;   // Denormalized for display
     private String userId;
+    private String userName;       // Denormalized for display
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String status; // e.g., "confirmed", "pending", "cancelled"
-    private String purpose; // e.g., "study", "meeting", "event"
-    private Integer attendees; // Number of attendees for the booking
-    private String adminRemarks; // Optional field for admin notes or remarks
+    private String status; // PENDING, APPROVED, REJECTED, CANCELLED
+    private String purpose;
+    private Integer expectedAttendees;
+    private String adminRemarks;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

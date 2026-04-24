@@ -3,10 +3,10 @@ package com.example.smartcampus.backend.controllers;
 import com.example.smartcampus.backend.models.Resource;
 import com.example.smartcampus.backend.services.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/resources")
@@ -16,44 +16,93 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
+    // ========================================
+    // GET ALL RESOURCES → USER + ADMIN
+    // ========================================
+
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<Resource> getAllResources() {
         return resourceService.getAllResources();
     }
 
+    // ========================================
+    // GET RESOURCE BY ID → USER + ADMIN
+    // ========================================
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public Resource getResourceById(@PathVariable String id) {
+        return resourceService.getResourceById(id);
+    }
+
+    // ========================================
+    // CREATE RESOURCE → ADMIN ONLY
+    // ========================================
+
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Resource createResource(@RequestBody Resource resource) {
         return resourceService.createResource(resource);
     }
 
-    @GetMapping("/{id}")
-    public Optional<Resource> getResourceById(@PathVariable String id) {
-        return resourceService.getResourceById(id);
-    }
+    // ========================================
+    // UPDATE RESOURCE → ADMIN ONLY
+    // ========================================
 
     @PutMapping("/{id}")
-    public Resource updateResource(@PathVariable String id, @RequestBody Resource resource) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public Resource updateResource(
+            @PathVariable String id,
+            @RequestBody Resource resource
+    ) {
         return resourceService.updateResource(id, resource);
     }
 
+    // ========================================
+    // DELETE RESOURCE → ADMIN ONLY
+    // ========================================
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteResource(@PathVariable String id) {
         resourceService.deleteResource(id);
         return "Resource deleted successfully";
     }
 
+    // ========================================
+    // SEARCH BY TYPE → USER + ADMIN
+    // ========================================
+
     @GetMapping("/type/{type}")
-    public List<Resource> getResourcesByType(@PathVariable String type) {
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public List<Resource> getResourcesByType(
+            @PathVariable String type
+    ) {
         return resourceService.getResourcesByType(type);
     }
 
+    // ========================================
+    // SEARCH BY LOCATION → USER + ADMIN
+    // ========================================
+
     @GetMapping("/location/{location}")
-    public List<Resource> getResourcesByLocation(@PathVariable String location) {
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public List<Resource> getResourcesByLocation(
+            @PathVariable String location
+    ) {
         return resourceService.getResourcesByLocation(location);
     }
 
+    // ========================================
+    // SEARCH BY CAPACITY → USER + ADMIN
+    // ========================================
+
     @GetMapping("/capacity/{capacity}")
-    public List<Resource> getResourcesByCapacity(@PathVariable int capacity) {
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public List<Resource> getResourcesByCapacity(
+            @PathVariable int capacity
+    ) {
         return resourceService.getResourcesByCapacity(capacity);
     }
 }

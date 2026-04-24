@@ -3,16 +3,18 @@ package com.example.smartcampus.backend.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder; 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.smartcampus.backend.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -35,24 +37,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configure(http))
+            .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                })
+            )
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints (no authentication required)
                 .requestMatchers("/api/auth/**", "/api/test/**", "/login/**", "/oauth2/**").permitAll()
-                // Protected endpoints
-                .requestMatchers("/api/bookings/**", "/api/tickets/**").authenticated()
+                
+                // Allow public access for testing tickets, bookings, and resources to prevent redirects
+                .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
+                
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
-            // OAuth2 Login Configuration
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
                 )
                 .successHandler((request, response, authentication) -> {
-                    // Generate JWT token after successful OAuth login
                     org.springframework.security.oauth2.core.user.OAuth2User oAuth2User = 
                         (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
                     String email = (String) oAuth2User.getAttributes().get("email");

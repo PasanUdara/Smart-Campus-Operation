@@ -3,43 +3,87 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';  // Nisidu- Import ProtectedRoute
 import OAuthCallback from '../pages/OAuthCallback';
 
-// ඔයාගේ Maintenance Pages Import කරගැනීම
-
+// Resource Pages
 import ResourceList from "../pages/Resources/ResourceList";
 import ResourceCreate from "../pages/Resources/ResourceCreate";
 import ResourceEdit from "../pages/Resources/ResourceEdit";
-// 🏠 Maintenance Pages Import (Path Changed to components)
+
+// General & Auth Pages
 import Home from '../pages/Home';
-import Login from '../pages/Login';  // Nisidu- Import Login page
-import AdminPanel from '../pages/AdminPanel';  // Nisidu- Import AdminPanel page
+import Login from '../pages/Login'; 
+import AdminPanel from '../pages/AdminPanel'; 
+
+// Booking Pages
+import BookingPage from '../pages/Bookings/BookingPage';
+import AdminBookings from '../pages/Bookings/AdminBookings';
+
+// Maintenance Components
 import TicketCreate from '../components/Maintenance/TicketCreate';
 import TicketList from '../components/Maintenance/TicketList';
 
 const AppRoutes = () => {
   return (
     <Routes>
-        {/* Public Route - Login */}
+      {/* Public Route - Login */}
       <Route path="/login" element={<Login />} />  {/* Nisidu- Login route */}
 
-      {/* OAuth Callback Route - ADD THIS */}
+      {/* OAuth Callback Route */}
       <Route path="/oauth-callback" element={<OAuthCallback />} />
       
-      <Route path="/" element={  <ProtectedRoute><Home /></ProtectedRoute> } />
+      <Route 
+        path="/" 
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } 
+      />
       
+      <Route 
+        path="/report-fault" 
+        element={
+          <ProtectedRoute>
+            <TicketCreate />
+          </ProtectedRoute>
+        } 
+      />
       
-      <Route path="/report-fault" element={<ProtectedRoute><TicketCreate /></ProtectedRoute>} />
-      
-      
-      <Route path="/admin/tickets" element={<ProtectedRoute adminOnly={true}><TicketList /></ProtectedRoute>} />
+      {/* Booking Routes */}
+      <Route 
+        path="/booking" 
+        element={
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        }
+      />
 
-       <Route path="/admin/users" element={
-        <ProtectedRoute adminOnly={true}>
-          <AdminPanel />
-        </ProtectedRoute>
-      } />
+      <Route 
+        path="/admin/bookings" 
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminBookings />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route 
+        path="/admin/tickets" 
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <TicketList />
+          </ProtectedRoute>
+        } 
+      />
 
-      {/* අනාගතයේදී අනිත් සාමාජිකයන්ගේ පේජ් මෙතනට ඇඩ් කළ හැක */}
-      {/* <Route path="/assets" element={<AssetCatalogue />} /> */}
+      <Route 
+        path="/admin/users" 
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminPanel />
+          </ProtectedRoute>
+        } 
+      />
 
       <Route path="/resources" element={<ResourceList />} />
       <Route path="/resources/create" element={<ResourceCreate />} />
