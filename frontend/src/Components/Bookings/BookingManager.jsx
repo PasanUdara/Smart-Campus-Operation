@@ -1,62 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { createBooking } from '../../api/BookingApi';
+import { getAllResources } from '../../api/resourceApi';
+import { useAuth } from '../../contexts/AuthContext';
 
 const BookingManager = () => {
-    // 1. Form State
+    const { token } = useAuth();
+    const location = useLocation();
+
+    // Form State
     const [formData, setFormData] = useState({
-        resourceId: '', 
+        resourceId: '',
         startTime: '',
         endTime: '',
         purpose: '',
         expectedAttendees: ''
     });
 
-    // 2. Validation & UI State
+    // Resources list from API
+    const [resources, setResources] = useState([]);
+
+    // Validation & UI State
     const [errors, setErrors] = useState({});
     const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Pre-fill resourceId from query params (e.g., from Resource page "Book" button)
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const resourceIdFromQuery = params.get('resourceId');
+        if (resourceIdFromQuery) {
+            setFormData((prev) => ({ ...prev, resourceId: resourceIdFromQuery }));
+        }
+    }, [location.search]);
+
+    // Fetch real resources from the API
+    useEffect(() => {
+        const fetchResources = async () => {
+            try {
+                const response = await getAllResources();
+                setResources(response.data);
+            } catch (err) {
+                console.error('Failed to load resource list:', err);
+            }
+        };
+        fetchResources();
+    }, []);
 
     // Handle input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        // Clear the specific error when the user starts typing again
         if (errors[name]) {
             setErrors({ ...errors, [name]: null });
         }
     };
 
-    // 3. The Validation Logic
+    // Validation Logic
     const validateForm = () => {
         let newErrors = {};
         const now = new Date();
         const start = new Date(formData.startTime);
         const end = new Date(formData.endTime);
 
-        if (!formData.resourceId) newErrors.resourceId = "Please select a resource.";
-        if (!formData.purpose.trim()) newErrors.purpose = "Purpose is required.";
-        if (!formData.expectedAttendees || formData.expectedAttendees < 1) {
-            newErrors.expectedAttendees = "Must have at least 1 attendee.";
+        // 1. Resource must be selected
+        if (!formData.resourceId) {
+            newErrors.resourceId = "Please select a resource.";
         }
 
+        // 2. Purpose validations
+        if (!formData.purpose || !formData.purpose.trim()) {
+            newErrors.purpose = "Purpose is required.";
+        } else if (formData.purpose.trim().length < 3) {
+            newErrors.purpose = "Purpose must be at least 3 characters long.";
+        } else if (formData.purpose.trim().length > 500) {
+            newErrors.purpose = "Purpose must be 500 characters or less.";
+        }
+
+        // 3. Attendees validations
+        const attendees = parseInt(formData.expectedAttendees, 10);
+        if (!formData.expectedAttendees || isNaN(attendees) || attendees < 1) {
+            newErrors.expectedAttendees = "Must have at least 1 attendee.";
+        } else if (attendees > 1000) {
+            newErrors.expectedAttendees = "Attendees cannot exceed 1000.";
+        } else if (formData.resourceId) {
+            // Check against selected resource capacity
+            const selectedResource = resources.find(r => r.id === formData.resourceId);
+            if (selectedResource && attendees > selectedResource.capacity) {
+                newErrors.expectedAttendees = `Attendees (${attendees}) exceeds resource capacity (${selectedResource.capacity}). Choose a larger facility.`;
+            }
+        }
+
+        // 4. Start time validations
         if (!formData.startTime) {
             newErrors.startTime = "Start time is required.";
-        } else if (start < now) {
-            newErrors.startTime = "Start time cannot be in the past.";
+        } else if (formData.endTime && start.getTime() === end.getTime()) {
+            newErrors.startTime = "Start time and end time cannot be the same.";
+        } else if (formData.endTime && start >= end) {
+            newErrors.startTime = "Start time must be before the end time.";
         }
 
+        // 5. End time validations
         if (!formData.endTime) {
             newErrors.endTime = "End time is required.";
-        } else if (end <= start) {
+        } else if (formData.startTime && start.getTime() === end.getTime()) {
+            newErrors.endTime = "End time cannot be the same as start time.";
+        } else if (formData.startTime && end <= start) {
             newErrors.endTime = "End time must be after the start time.";
+        } else if (formData.startTime && !newErrors.startTime) {
+            // Duration checks (only if both times are valid)
+            const durationMinutes = (end - start) / (1000 * 60);
+            if (durationMinutes < 15) {
+                newErrors.endTime = "Booking duration must be at least 15 minutes.";
+            } else if (durationMinutes > 24 * 60) {
+                newErrors.endTime = "Booking duration cannot exceed 24 hours.";
+            }
         }
 
         setErrors(newErrors);
-        // Returns true if there are 0 errors
         return Object.keys(newErrors).length === 0;
     };
 
-    // 4. Form Submission
+    // Form Submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitStatus({ type: '', message: '' });
@@ -66,128 +131,176 @@ const BookingManager = () => {
         setIsSubmitting(true);
 
         try {
-            // HTML datetime-local outputs "YYYY-MM-DDThh:mm", which Spring Boot parses perfectly!
-            await createBooking(formData);
-            
-            setSubmitStatus({ 
-                type: 'success', 
-                message: 'Booking request submitted successfully! Waiting for admin approval.' 
+            const payload = {
+                ...formData,
+                expectedAttendees: parseInt(formData.expectedAttendees, 10),
+                startTime: formData.startTime ? `${formData.startTime}:00` : null,
+                endTime: formData.endTime ? `${formData.endTime}:00` : null,
+            };
+
+            await createBooking(payload, token);
+
+            setSubmitStatus({
+                type: 'success',
+                message: 'Booking request submitted successfully! Waiting for admin approval.'
             });
-            
+
             // Clear the form after success
             setFormData({ resourceId: '', startTime: '', endTime: '', purpose: '', expectedAttendees: '' });
         } catch (error) {
-            setSubmitStatus({ type: 'error', message: error.message });
+            const message = error.response?.data?.message || error.message;
+            setSubmitStatus({ type: 'error', message });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 mt-10 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-zinc-900/30 border border-zinc-800 p-8 md:p-12 rounded-[3rem] backdrop-blur-2xl shadow-2xl">
             <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">Reserve a Resource</h2>
-                <p className="text-gray-500 mt-1">Fill out the details below to request a booking.</p>
+                <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">
+                    Reserve a <span className="text-yellow-400">Resource.</span>
+                </h2>
+                <p className="text-zinc-500 mt-2 text-sm">Fill out the details below to request a booking.</p>
             </div>
 
-            {/* Status Messages (Success or Conflict Error) */}
+            {/* Status Messages */}
             {submitStatus.message && (
-                <div className={`p-4 mb-6 rounded-lg text-sm font-medium ${
-                    submitStatus.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+                <div className={`p-4 mb-6 rounded-2xl text-sm font-bold border ${
+                    submitStatus.type === 'success'
+                        ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                        : 'bg-red-500/10 text-red-400 border-red-500/30'
                 }`}>
+                    {submitStatus.type === 'success' ? '✅ ' : '⚠️ '}
                     {submitStatus.message}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                
+
                 {/* Resource Selection */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Select Resource</label>
-                    <select 
-                        name="resourceId" 
-                        value={formData.resourceId} 
+                    <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+                        Select Resource
+                    </label>
+                    <select
+                        name="resourceId"
+                        value={formData.resourceId}
                         onChange={handleChange}
-                        className={`w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${errors.resourceId ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all appearance-none cursor-pointer ${
+                            errors.resourceId ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                        }`}
                     >
                         <option value="">-- Choose a Facility --</option>
-                        {/* In a real app, you would fetch these from Member 1's API */}
-                        <option value="1">Main Auditorium (Capacity: 300)</option>
-                        <option value="2">Computer Lab 04 (Capacity: 50)</option>
-                        <option value="3">Meeting Room B (Capacity: 10)</option>
+                        {resources.map((res) => (
+                            <option key={res.id} value={res.id}>
+                                {res.name} — {res.type} (Capacity: {res.capacity})
+                            </option>
+                        ))}
                     </select>
-                    {errors.resourceId && <p className="text-red-500 text-xs mt-1">{errors.resourceId}</p>}
+                    {errors.resourceId && <p className="text-red-400 text-xs mt-1 font-medium">{errors.resourceId}</p>}
                 </div>
 
                 {/* Date & Time Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                        <input 
-                            type="datetime-local" 
-                            name="startTime" 
-                            value={formData.startTime} 
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+                            Start Time
+                        </label>
+                        <input
+                            type="datetime-local"
+                            name="startTime"
+                            value={formData.startTime}
                             onChange={handleChange}
-                            className={`w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${errors.startTime ? 'border-red-500' : 'border-gray-300'}`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.startTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
-                        {errors.startTime && <p className="text-red-500 text-xs mt-1">{errors.startTime}</p>}
+                        {errors.startTime && <p className="text-red-400 text-xs mt-1 font-medium">{errors.startTime}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                        <input 
-                            type="datetime-local" 
-                            name="endTime" 
-                            value={formData.endTime} 
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+                            End Time
+                        </label>
+                        <input
+                            type="datetime-local"
+                            name="endTime"
+                            value={formData.endTime}
                             onChange={handleChange}
-                            className={`w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${errors.endTime ? 'border-red-500' : 'border-gray-300'}`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.endTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
-                        {errors.endTime && <p className="text-red-500 text-xs mt-1">{errors.endTime}</p>}
+                        {errors.endTime && <p className="text-red-400 text-xs mt-1 font-medium">{errors.endTime}</p>}
                     </div>
                 </div>
 
                 {/* Purpose & Attendees Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Purpose of Booking</label>
-                        <input 
-                            type="text" 
-                            name="purpose" 
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+                            Purpose of Booking
+                        </label>
+                        <input
+                            type="text"
+                            name="purpose"
                             placeholder="e.g., Guest Lecture on AI"
-                            value={formData.purpose} 
+                            value={formData.purpose}
                             onChange={handleChange}
-                            className={`w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${errors.purpose ? 'border-red-500' : 'border-gray-300'}`}
+                            maxLength={500}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.purpose ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
-                        {errors.purpose && <p className="text-red-500 text-xs mt-1">{errors.purpose}</p>}
+                        <div className="flex justify-between items-center mt-1">
+                            {errors.purpose ? <p className="text-red-400 text-xs font-medium">{errors.purpose}</p> : <span />}
+                            <span className={`text-[10px] ${formData.purpose.length > 450 ? 'text-yellow-400' : 'text-zinc-700'}`}>{formData.purpose.length}/500</span>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Attendees</label>
-                        <input 
-                            type="number" 
-                            name="expectedAttendees" 
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">
+                            Expected Attendees
+                        </label>
+                        <input
+                            type="number"
+                            name="expectedAttendees"
                             placeholder="0"
-                            value={formData.expectedAttendees} 
+                            min="1"
+                            max="1000"
+                            value={formData.expectedAttendees}
                             onChange={handleChange}
-                            className={`w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition ${errors.expectedAttendees ? 'border-red-500' : 'border-gray-300'}`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.expectedAttendees ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
-                        {errors.expectedAttendees && <p className="text-red-500 text-xs mt-1">{errors.expectedAttendees}</p>}
+                        {errors.expectedAttendees && <p className="text-red-400 text-xs mt-1 font-medium">{errors.expectedAttendees}</p>}
                     </div>
                 </div>
 
                 {/* Submit Button */}
                 <div className="pt-4">
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={isSubmitting}
-                        className={`w-full text-white font-bold py-3 px-4 rounded-lg transition shadow-md 
-                            ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'}`}
+                        className={`w-full text-black font-black uppercase italic tracking-widest py-4 px-4 rounded-2xl transition-all text-sm
+                            ${isSubmitting
+                                ? 'bg-yellow-400/50 cursor-not-allowed'
+                                : 'bg-yellow-400 hover:bg-yellow-500 hover:shadow-[0_15px_30px_rgba(250,204,21,0.15)] active:scale-[0.98]'
+                            }`}
                     >
                         {isSubmitting ? 'Processing...' : 'Submit Booking Request'}
                     </button>
                 </div>
 
             </form>
+
+            <style>{`
+                input::placeholder { color: #555; text-transform: uppercase; font-weight: 900; font-size: 9px; letter-spacing: 0.1em; }
+                input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+                select option { background: #111; color: #fff; }
+            `}</style>
         </div>
     );
 };

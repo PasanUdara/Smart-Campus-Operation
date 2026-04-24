@@ -61,6 +61,15 @@ const Header = () => {
           {isAdmin() && (
             <>
               <NavLink
+                to="/admin/bookings"
+                className={({ isActive }) =>
+                  isActive ? "text-yellow-400" : "hover:text-yellow-400 transition"
+                }
+              >
+                Bookings
+              </NavLink>
+
+              <NavLink
                 to="/admin/tickets"
                 className={({ isActive }) =>
                   isActive ? "text-yellow-400" : "hover:text-yellow-400 transition"
