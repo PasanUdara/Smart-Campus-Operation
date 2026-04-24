@@ -5,14 +5,27 @@ import { createResource } from "../../api/resourceApi";
 function ResourceCreate() {
   const navigate = useNavigate();
 
+  // =========================
+  // FORM STATE
+  // =========================
+
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     capacity: "",
     location: "",
     availabilityWindow: "",
+
+    // NEW FEATURE → Availability Calendar
+    availableDays: "",
+    availableTime: "",
+
     status: "ACTIVE",
   });
+
+  // =========================
+  // HANDLE INPUT CHANGE
+  // =========================
 
   const handleChange = (e) => {
     setFormData({
@@ -21,6 +34,10 @@ function ResourceCreate() {
     });
   };
 
+  // =========================
+  // HANDLE SUBMIT
+  // =========================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,18 +45,29 @@ function ResourceCreate() {
       await createResource(formData);
       navigate("/resources");
     } catch (error) {
-      console.error("Error creating resource", error);
+      console.error("Error creating resource:", error);
     }
   };
+
+  // =========================
+  // UI
+  // =========================
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-6 text-white">
       <div className="bg-gray-900 w-full max-w-lg p-8 rounded-xl shadow-lg">
+
+        {/* TITLE */}
         <h2 className="text-2xl font-bold text-yellow-400 text-center mb-6">
           Add Resource
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* FORM */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+        >
+          {/* NAME */}
           <input
             type="text"
             name="name"
@@ -50,6 +78,7 @@ function ResourceCreate() {
             required
           />
 
+          {/* TYPE */}
           <select
             name="type"
             value={formData.type}
@@ -66,6 +95,7 @@ function ResourceCreate() {
             <option value="Equipment">Equipment</option>
           </select>
 
+          {/* CAPACITY */}
           <input
             type="number"
             name="capacity"
@@ -76,6 +106,7 @@ function ResourceCreate() {
             required
           />
 
+          {/* LOCATION */}
           <input
             type="text"
             name="location"
@@ -86,6 +117,7 @@ function ResourceCreate() {
             required
           />
 
+          {/* OLD FEATURE */}
           <input
             type="text"
             name="availabilityWindow"
@@ -96,6 +128,29 @@ function ResourceCreate() {
             required
           />
 
+          {/* NEW FEATURE → AVAILABLE DAYS */}
+          <input
+            type="text"
+            name="availableDays"
+            placeholder="Available Days (Mon - Fri)"
+            value={formData.availableDays}
+            onChange={handleChange}
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
+
+          {/* NEW FEATURE → AVAILABLE TIME */}
+          <input
+            type="text"
+            name="availableTime"
+            placeholder="Available Time (8AM - 5PM)"
+            value={formData.availableTime}
+            onChange={handleChange}
+            className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
+            required
+          />
+
+          {/* STATUS */}
           <select
             name="status"
             value={formData.status}
@@ -103,9 +158,12 @@ function ResourceCreate() {
             className="bg-gray-800 border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-yellow-400"
           >
             <option value="ACTIVE">ACTIVE</option>
-            <option value="OUT_OF_SERVICE">OUT OF SERVICE</option>
+            <option value="OUT_OF_SERVICE">
+              OUT OF SERVICE
+            </option>
           </select>
 
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
             className="bg-yellow-400 text-black py-3 rounded-lg font-semibold hover:bg-yellow-500 transition"

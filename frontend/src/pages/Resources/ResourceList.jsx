@@ -101,11 +101,31 @@ function ResourceList() {
   };
 
   // =========================
-  // BOOK RESOURCE (USER)
+  // CHECK AVAILABILITY
   // =========================
 
-  const handleBook = (resource) => {
-    alert(`Booking resource: ${resource.name}`);
+  const handleCheckAvailability = (resource) => {
+    alert(
+      `Resource: ${resource.name}
+
+Available Days: ${resource.availableDays}
+
+Available Time: ${resource.availableTime}`
+    );
+  };
+
+  // =========================
+  // BOOK RESOURCE
+  // =========================
+
+  const handleBookNow = (resource) => {
+    alert(
+      `Booking Request Started
+
+Resource: ${resource.name}
+
+Please continue to booking form.`
+    );
   };
 
   // =========================
@@ -114,10 +134,7 @@ function ResourceList() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
-      {/* =========================
-          PAGE HEADER
-      ========================= */}
-
+      {/* PAGE HEADER */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold text-yellow-400">
           Resources
@@ -134,16 +151,11 @@ function ResourceList() {
         )}
       </div>
 
-      {/* =========================
-          SEARCH SECTION
-      ========================= */}
-
+      {/* SEARCH SECTION */}
       <div className="flex gap-3 mb-8 flex-wrap">
         <select
           value={filterType}
-          onChange={(e) =>
-            setFilterType(e.target.value)
-          }
+          onChange={(e) => setFilterType(e.target.value)}
           className="bg-gray-800 border border-gray-700 p-3 rounded-lg min-w-[180px]"
         >
           <option value="">Select Filter</option>
@@ -156,9 +168,7 @@ function ResourceList() {
           type="text"
           placeholder="Enter search value..."
           value={searchValue}
-          onChange={(e) =>
-            setSearchValue(e.target.value)
-          }
+          onChange={(e) => setSearchValue(e.target.value)}
           className="bg-gray-800 border border-gray-700 p-3 rounded-lg flex-1 min-w-[250px]"
         />
 
@@ -177,10 +187,7 @@ function ResourceList() {
         </button>
       </div>
 
-      {/* =========================
-          RESOURCE TABLE
-      ========================= */}
-
+      {/* RESOURCE TABLE */}
       <div className="overflow-x-auto rounded-xl">
         <table className="w-full bg-gray-900 text-center rounded-xl overflow-hidden">
           <thead className="bg-yellow-400 text-black">
@@ -189,6 +196,7 @@ function ResourceList() {
               <th>Type</th>
               <th>Capacity</th>
               <th>Location</th>
+              <th>Availability</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -201,9 +209,7 @@ function ResourceList() {
                   key={resource.id}
                   className="border-b border-gray-700"
                 >
-                  <td className="py-4">
-                    {resource.name}
-                  </td>
+                  <td className="py-4">{resource.name}</td>
 
                   <td>{resource.type}</td>
 
@@ -211,18 +217,27 @@ function ResourceList() {
 
                   <td>{resource.location}</td>
 
+                  {/* Availability */}
+                  <td>
+                    <div className="text-sm">
+                      <p>{resource.availableDays}</p>
+                      <p className="text-yellow-400">
+                        {resource.availableTime}
+                      </p>
+                    </div>
+                  </td>
+
+                  {/* Status */}
                   <td>
                     <span className="bg-yellow-400 text-black px-3 py-1 rounded-full font-medium">
                       {resource.status}
                     </span>
                   </td>
 
+                  {/* Actions */}
                   <td>
-                    {/* =========================
-                        ADMIN → EDIT + DELETE
-                    ========================= */}
-
                     {isAdmin() ? (
+                      /* ADMIN → EDIT + DELETE */
                       <div className="flex justify-center gap-2">
                         <Link
                           to={`/resources/edit/${resource.id}`}
@@ -241,19 +256,27 @@ function ResourceList() {
                         </button>
                       </div>
                     ) : (
-                      /* =========================
-                          USER → BOOK BUTTON ONLY
-                      ========================= */
-
+                      /* USER → CHECK + BOOK */
                       resource.status === "ACTIVE" && (
-                        <button
-                          onClick={() =>
-                            handleBook(resource)
-                          }
-                          className="bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 transition"
-                        >
-                          Book
-                        </button>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() =>
+                              handleCheckAvailability(resource)
+                            }
+                            className="bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 transition"
+                          >
+                            Check Availability
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleBookNow(resource)
+                            }
+                            className="bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 transition"
+                          >
+                            Book Now
+                          </button>
+                        </div>
                       )
                     )}
                   </td>
@@ -262,7 +285,7 @@ function ResourceList() {
             ) : (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   className="py-8 text-gray-400"
                 >
                   No resources found
