@@ -43,7 +43,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/api/test/**", "/login/**", "/oauth2/**").permitAll()
                 
                 // Public access for testing tickets, bookings, and resources
-                .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
+                // .requestMatchers("/api/resources/**", "/api/bookings/**", "/api/tickets/**").permitAll()
+
+                .requestMatchers("/api/resources/**").authenticated()
                 
                 // Protected endpoints
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
