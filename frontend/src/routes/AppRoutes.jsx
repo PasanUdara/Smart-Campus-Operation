@@ -13,6 +13,10 @@ import Home from '../pages/Home';
 import Login from '../pages/Login'; 
 import AdminPanel from '../pages/AdminPanel'; 
 
+// Booking Pages
+import BookingPage from '../pages/Bookings/BookingPage';
+import AdminBookings from '../pages/Bookings/AdminBookings';
+
 // Maintenance Components
 import TicketCreate from '../components/Maintenance/TicketCreate';
 import TicketList from '../components/Maintenance/TicketList';
@@ -23,7 +27,7 @@ const AppRoutes = () => {
       {/* Public Route - Login */}
       <Route path="/login" element={<Login />} />  {/* Nisidu- Login route */}
 
-      {/* OAuth Callback Route - ADD THIS */}
+      {/* OAuth Callback Route */}
       <Route path="/oauth-callback" element={<OAuthCallback />} />
       
       <Route 
@@ -42,6 +46,25 @@ const AppRoutes = () => {
             <TicketCreate />
           </ProtectedRoute>
         } 
+      />
+      
+      {/* Booking Routes */}
+      <Route 
+        path="/booking" 
+        element={
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route 
+        path="/admin/bookings" 
+        element={
+          <ProtectedRoute adminOnly={true}>
+            <AdminBookings />
+          </ProtectedRoute>
+        }
       />
       
       <Route 

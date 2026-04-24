@@ -34,7 +34,7 @@ const Home = () => {
             <button onClick={() => navigate('/report-fault')} className="bg-yellow-400 text-black px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest hover:bg-yellow-500 transition-all hover:-translate-y-1 shadow-2xl shadow-yellow-400/20">
               Launch Maintenance
             </button>
-            <button className="bg-zinc-900 border border-zinc-800 text-white px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest hover:bg-zinc-800 transition-all">
+            <button onClick={() => navigate('/booking')} className="bg-zinc-900 border border-zinc-800 text-white px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest hover:bg-zinc-800 transition-all">
               Facility Booking
             </button>
           </div>
@@ -55,15 +55,15 @@ const Home = () => {
             <div className="h-1 w-20 bg-yellow-400 group-hover:w-full transition-all duration-500"></div>
           </div>
 
-          {/* Card 2: Booking (Visual only as requested) */}
-          <div className="group bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] opacity-60">
+          {/* Card 2: Booking */}
+          <div className="group bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] hover:border-yellow-400/50 transition-all cursor-pointer" onClick={() => navigate('/booking')}>
             <div className="flex justify-between items-start mb-10">
-              <div className="bg-zinc-800 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">📅</div>
-              <span className="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Module 02</span>
+              <div className="bg-yellow-400 text-black w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">📅</div>
+              <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Module 02</span>
             </div>
-            <h3 className="text-3xl font-black mb-4 uppercase italic text-zinc-400">Facility & <br />Asset Booking</h3>
-            <p className="text-zinc-600 text-sm leading-relaxed mb-8">Manage campus labs, equipment, and room reservations with role-based scheduling.</p>
-            <p className="text-[10px] font-bold text-yellow-400 italic">SYSTEM UPGRADE IN PROGRESS</p>
+            <h3 className="text-3xl font-black mb-4 uppercase italic">Facility & <span className="text-yellow-400">Asset Booking</span></h3>
+            <p className="text-zinc-500 text-sm leading-relaxed mb-8">Manage campus labs, equipment, and room reservations with role-based scheduling.</p>
+            <div className="h-1 w-20 bg-yellow-400 group-hover:w-full transition-all duration-500"></div>
           </div>
         </div>
       </section>
