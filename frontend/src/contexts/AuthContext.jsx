@@ -27,6 +27,10 @@ export const AuthProvider = ({ children }) => {
 
             if (response.data.authenticated) {
                 setUser(response.data);
+                localStorage.setItem(
+                 "user",
+                 JSON.stringify(response.data)
+                );
                 console.log("User set successfully:", response.data); 
 
             } else {
@@ -65,6 +69,8 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem("user");
+
         setToken(null);
         setUser(null);
     };
@@ -72,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     const isAdmin = () => {
         return user?.roles?.includes('ROLE_ADMIN') || false;
     };
-
+    
     const value = {
         user,
         token,
