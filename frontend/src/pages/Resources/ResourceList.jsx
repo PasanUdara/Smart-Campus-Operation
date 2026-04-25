@@ -118,15 +118,12 @@ Available Time: ${resource.availableTime}`
   // BOOK RESOURCE
   // =========================
 
-  const handleBookNow = (resource) => {
-    alert(
-      `Booking Request Started
+ const navigate = useNavigate();
 
-Resource: ${resource.name}
-
-Please continue to booking form.`
-    );
-  };
+const handleBookNow = (resource) => {
+    // Redirect to booking page with resource info
+    navigate(`/booking?resourceId=${resource.id}&resourceName=${encodeURIComponent(resource.name)}`);
+};
 
   // =========================
   // UI
