@@ -29,11 +29,10 @@ const BookingPage = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${
-                                activeTab === tab.id
+                            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${activeTab === tab.id
                                     ? 'bg-yellow-400 text-black shadow-[0_10px_25px_rgba(250,204,21,0.15)]'
                                     : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-yellow-400/40 hover:text-yellow-400'
-                            }`}
+                                }`}
                         >
                             <span>{tab.icon}</span>
                             {tab.label}

@@ -106,11 +106,10 @@ const MyBookings = () => {
                     <button
                         key={status}
                         onClick={() => setFilter(status)}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                            filter === status
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === status
                                 ? 'bg-yellow-400 text-black'
                                 : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-yellow-400/50 hover:text-yellow-400'
-                        }`}
+                            }`}
                     >
                         {status} {status !== 'ALL' && `(${bookings.filter(b => status === 'ALL' || b.status === status).length})`}
                     </button>
@@ -183,11 +182,10 @@ const MyBookings = () => {
                                             <button
                                                 onClick={() => handleCancel(booking.id)}
                                                 disabled={cancellingId === booking.id}
-                                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                                    cancellingId === booking.id
+                                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${cancellingId === booking.id
                                                         ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                                                         : 'bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500 hover:text-white'
-                                                }`}
+                                                    }`}
                                             >
                                                 {cancellingId === booking.id ? 'Cancelling...' : 'Cancel Booking'}
                                             </button>
