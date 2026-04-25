@@ -9,13 +9,13 @@ function App() {
   return (
     <Router>
       <AuthProvider>  {/* Nisidu- Wrap everything */}
-        <div className="bg-zinc-950 min-h-screen">
-          <Header />
-          <main>
-            <AppRoutes />
-          </main>
-          <Footer />
-        </div>
+      <div className="bg-zinc-950 min-h-screen">
+        <Header />
+        <main>
+           <AppRoutes />
+        </main>
+        <Footer />
+      </div>
       </AuthProvider>  {/* Nisidu- Closing tag */}
     </Router>
   );

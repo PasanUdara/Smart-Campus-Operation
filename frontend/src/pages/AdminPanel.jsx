@@ -48,18 +48,18 @@ const AdminPanel = () => {
     };
 
     const handleCreateUser = async () => {
-        console.log("Token for create user:", token);  // ADD THIS
-        console.log("New user data:", newUser);        // ADD THIS
+          console.log("Token for create user:", token);  // ADD THIS
+    console.log("New user data:", newUser);        // ADD THIS
         if (!newUser.email || !newUser.name) {
             alert("Email and Name are required");
             return;
         }
-
+        
         try {
             const response = await axios.post('http://localhost:8080/api/users', newUser, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
+            
             if (response.data.success) {
                 alert(`User created successfully!\nEmail: ${newUser.email}\nPassword: ${response.data.password}\n\nPlease share this password with the user.`);
                 setShowCreateModal(false);
@@ -78,7 +78,7 @@ const AdminPanel = () => {
             alert("Please enter user data");
             return;
         }
-
+        
         try {
             const usersList = bulkUsers.split('\n')
                 .filter(line => line.trim())
@@ -90,11 +90,11 @@ const AdminPanel = () => {
                         role: parts[2] ? parts[2].toUpperCase() : "USER"
                     };
                 });
-
+            
             const response = await axios.post('http://localhost:8080/api/users/bulk', usersList, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
+            
             let message = `Bulk upload complete!\nSuccess: ${response.data.successCount} / ${response.data.total}\n\n`;
             if (response.data.results) {
                 response.data.results.forEach(r => {
@@ -142,7 +142,7 @@ const AdminPanel = () => {
                     </button>
                 </div>
             </div>
-
+            
             <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
                 <table className="w-full">
                     <thead className="bg-zinc-800">
@@ -184,8 +184,9 @@ const AdminPanel = () => {
                                     )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span className={`px-2 py-1 text-xs rounded ${user.active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                                        }`}>
+                                    <span className={`px-2 py-1 text-xs rounded ${
+                                        user.active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                                    }`}>
                                         {user.active ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
@@ -214,19 +215,19 @@ const AdminPanel = () => {
                                 type="email"
                                 placeholder="Email *"
                                 value={newUser.email}
-                                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                                onChange={(e) => setNewUser({...newUser, email: e.target.value})}
                                 className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             />
                             <input
                                 type="text"
                                 placeholder="Name *"
                                 value={newUser.name}
-                                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                                onChange={(e) => setNewUser({...newUser, name: e.target.value})}
                                 className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             />
                             <select
                                 value={newUser.role}
-                                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                                onChange={(e) => setNewUser({...newUser, role: e.target.value})}
                                 className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             >
                                 <option value="USER">User (Student)</option>
@@ -237,18 +238,18 @@ const AdminPanel = () => {
                                 type="text"
                                 placeholder="Password (leave empty for auto-generate)"
                                 value={newUser.password}
-                                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                onChange={(e) => setNewUser({...newUser, password: e.target.value})}
                                 className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-white focus:outline-none focus:border-yellow-400"
                             />
                             <div className="flex gap-3 pt-4">
-                                <button
-                                    onClick={handleCreateUser}
+                                <button 
+                                    onClick={handleCreateUser} 
                                     className="flex-1 bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-500 transition"
                                 >
                                     Create
                                 </button>
-                                <button
-                                    onClick={() => setShowCreateModal(false)}
+                                <button 
+                                    onClick={() => setShowCreateModal(false)} 
                                     className="flex-1 bg-zinc-800 text-white py-2 rounded-lg hover:bg-zinc-700 transition"
                                 >
                                     Cancel
@@ -266,8 +267,8 @@ const AdminPanel = () => {
                         <h3 className="text-xl font-bold mb-4 text-white">Bulk Upload Users</h3>
                         <p className="text-zinc-400 text-sm mb-2">Format: email, name, role (one per line)</p>
                         <p className="text-zinc-500 text-xs mb-4">
-                            Example:<br />
-                            student1@example.com, John Doe, USER<br />
+                            Example:<br/>
+                            student1@example.com, John Doe, USER<br/>
                             tech1@example.com, Jane Smith, TECHNICIAN
                         </p>
                         <textarea
@@ -278,14 +279,14 @@ const AdminPanel = () => {
                             className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-yellow-400"
                         />
                         <div className="flex gap-3 mt-4">
-                            <button
-                                onClick={handleBulkCreate}
+                            <button 
+                                onClick={handleBulkCreate} 
                                 className="flex-1 bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-500 transition"
                             >
                                 Upload
                             </button>
-                            <button
-                                onClick={() => setShowBulkModal(false)}
+                            <button 
+                                onClick={() => setShowBulkModal(false)} 
                                 className="flex-1 bg-zinc-800 text-white py-2 rounded-lg hover:bg-zinc-700 transition"
                             >
                                 Cancel

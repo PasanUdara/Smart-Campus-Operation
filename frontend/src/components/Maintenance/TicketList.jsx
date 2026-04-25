@@ -1,48 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { getAllTickets, updateStatus, deleteTicket, deleteComment } from '../../api/ticketApi';
-import axios from 'axios';
+import axios from 'axios';  
 
 
 const TicketList = () => {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedImg, setSelectedImg] = useState(null);
-    const currentUserId = "admin-master";
+    const currentUserId = "admin-master"; 
 
     const [technicians, setTechnicians] = useState([]);
-    const [showTechModal, setShowTechModal] = useState(false);
-    const [selectedTicketId, setSelectedTicketId] = useState(null);
+const [showTechModal, setShowTechModal] = useState(false);
+const [selectedTicketId, setSelectedTicketId] = useState(null);
 
     useEffect(() => { load(); }, []);
 
-    const load = async () => {
+    const load = async () => { 
         setLoading(true);
-        try {
-            const res = await getAllTickets();
-            setTickets(res.data);
-        } catch (err) {
-            console.error("Uplink Error:", err);
-        } finally {
-            setLoading(false);
+        try { 
+            const res = await getAllTickets(); 
+            setTickets(res.data); 
+        } catch (err) { 
+            console.error("Uplink Error:", err); 
+        } finally { 
+            setLoading(false); 
         }
     };
 
     useEffect(() => {
-        const fetchTechnicians = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:8080/api/users', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                // Filter only users with TECHNICIAN role
-                const techs = res.data.filter(u => u.roles?.includes('ROLE_TECHNICIAN'));
-                setTechnicians(techs);
-            } catch (err) {
-                console.error("Failed to fetch technicians:", err);
-            }
-        };
-        fetchTechnicians();
-    }, []);
+    const fetchTechnicians = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('http://localhost:8080/api/users', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Filter only users with TECHNICIAN role
+            const techs = res.data.filter(u => u.roles?.includes('ROLE_TECHNICIAN'));
+            setTechnicians(techs);
+        } catch (err) {
+            console.error("Failed to fetch technicians:", err);
+        }
+    };
+    fetchTechnicians();
+}, []);
 
     const handleWorkflowAction = async (id, stage) => {
         let note = "";
@@ -69,14 +69,14 @@ const TicketList = () => {
     };
 
     const handleDeleteComment = async (tId, cId) => {
-        if (window.confirm("ADMIN OVERRIDE: Delete this record permanently?")) {
+        if(window.confirm("ADMIN OVERRIDE: Delete this record permanently?")) {
             await deleteComment(tId, cId);
             load();
         }
     };
 
     const getStatusStyles = (status) => {
-        switch (status) {
+        switch(status) {
             case 'OPEN': return 'border-yellow-400 text-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.2)]';
             case 'IN_PROGRESS': return 'border-blue-500 text-blue-400';
             case 'RESOLVED': return 'border-emerald-500 text-emerald-400';
@@ -88,7 +88,7 @@ const TicketList = () => {
 
     return (
         <div className="p-6 md:p-12 bg-[#050505] min-h-screen text-white font-sans selection:bg-yellow-400 overflow-x-hidden">
-
+            
             <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
 
             <div className="max-w-[1700px] mx-auto relative z-10">
@@ -102,7 +102,7 @@ const TicketList = () => {
                     </div>
                     <div className="bg-zinc-900/30 p-4 rounded-3xl border border-zinc-800 backdrop-blur-sm px-10">
                         <p className="text-[8px] text-zinc-500 font-black uppercase mb-1">Active Alerts</p>
-                        <p className="text-3xl font-black text-yellow-400 tracking-tighter">{tickets.filter(t => t.status === 'OPEN').length}</p>
+                        <p className="text-3xl font-black text-yellow-400 tracking-tighter">{tickets.filter(t=>t.status==='OPEN').length}</p>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@ const TicketList = () => {
                         {tickets.map(t => (
                             <div key={t.id} className="group relative bg-zinc-900/10 border border-zinc-800 rounded-[2.5rem] overflow-hidden hover:border-yellow-400/40 transition-all duration-700 shadow-2xl backdrop-blur-sm">
                                 <div className="flex flex-col lg:flex-row">
-
+                                    
                                     <div className="flex-1 p-8 md:p-12">
                                         <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
                                             <div>
@@ -155,19 +155,19 @@ const TicketList = () => {
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 pt-8 border-t border-zinc-900">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedTicketId(t.id);
-                                                    setShowTechModal(true);
-                                                }}
-                                                className="bg-zinc-800/50 hover:bg-blue-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800"
-                                            >
-                                                Assign Agent
-                                            </button>
+                                            <button 
+    onClick={() => {
+        setSelectedTicketId(t.id);
+        setShowTechModal(true);
+    }} 
+    className="bg-zinc-800/50 hover:bg-blue-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800"
+>
+    Assign Agent
+</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'RESOLVED')} className="bg-zinc-800/50 hover:bg-emerald-600 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800">Resolve</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'CLOSED')} className="bg-zinc-800/50 hover:bg-zinc-700 text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-zinc-800 text-zinc-500">Close Log</button>
                                             <button onClick={() => handleWorkflowAction(t.id, 'REJECTED')} className="bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white text-[9px] font-black px-6 py-3 rounded-xl transition-all uppercase border border-red-900/50">Reject</button>
-                                            <button onClick={() => { if (window.confirm('Delete Forever?')) deleteTicket(t.id).then(load) }} className="ml-auto p-3 text-zinc-700 hover:text-red-500 transition-all">🗑️</button>
+                                            <button onClick={() => {if(window.confirm('Delete Forever?')) deleteTicket(t.id).then(load)}} className="ml-auto p-3 text-zinc-700 hover:text-red-500 transition-all">🗑️</button>
                                         </div>
                                     </div>
 
@@ -182,16 +182,16 @@ const TicketList = () => {
                                                 <p className="text-[8px] text-zinc-600 uppercase font-black">Contact</p><p className="text-xs font-black text-zinc-300">{t.contactDetails}</p>
                                             </div>
                                         </div>
-
+                                        
                                         <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-6">Visual Recon</h4>
                                         <div className="flex flex-wrap gap-4">
                                             {t.imageUrls?.map((img, i) => (
-                                                <img
-                                                    key={i}
-                                                    src={`/uploads/${img}`}
-                                                    className="w-20 h-20 rounded-2xl object-cover border border-zinc-800 grayscale hover:grayscale-0 cursor-zoom-in transition-all"
-                                                    onClick={() => setSelectedImg(`/uploads/${img}`)}
-                                                    onError={(e) => { e.target.src = "https://via.placeholder.com/100?text=Broken"; }}
+                                                <img 
+                                                  key={i} 
+                                                  src={`/uploads/${img}`} 
+                                                  className="w-20 h-20 rounded-2xl object-cover border border-zinc-800 grayscale hover:grayscale-0 cursor-zoom-in transition-all" 
+                                                  onClick={() => setSelectedImg(`/uploads/${img}`)}
+                                                  onError={(e) => { e.target.src = "https://via.placeholder.com/100?text=Broken"; }}
                                                 />
                                             ))}
                                         </div>
@@ -203,45 +203,45 @@ const TicketList = () => {
                 )}
             </div>
 
-            {/* Technician Selection Modal */}
-            {showTechModal && (
-                <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
-                    <div className="bg-zinc-900 rounded-2xl p-6 w-96 border border-zinc-800">
-                        <h3 className="text-xl font-bold mb-4 text-white">Select Technician</h3>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {technicians.length === 0 ? (
-                                <p className="text-zinc-500 text-center py-4">No technicians found. Create a technician user first.</p>
-                            ) : (
-                                technicians.map(tech => (
-                                    <button
-                                        key={tech.id}
-                                        onClick={async () => {
-                                            try {
-                                                await updateStatus(selectedTicketId, 'IN_PROGRESS', null, tech.id);
-                                                alert(`Ticket assigned to ${tech.name}`);
-                                                setShowTechModal(false);
-                                                load();
-                                            } catch (err) {
-                                                alert("Assignment failed: " + err.message);
-                                            }
-                                        }}
-                                        className="w-full text-left p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition"
-                                    >
-                                        <p className="font-semibold text-white">{tech.name}</p>
-                                        <p className="text-xs text-zinc-400">{tech.email}</p>
-                                    </button>
-                                ))
-                            )}
-                        </div>
+           {/* Technician Selection Modal */}
+{showTechModal && (
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+        <div className="bg-zinc-900 rounded-2xl p-6 w-96 border border-zinc-800">
+            <h3 className="text-xl font-bold mb-4 text-white">Select Technician</h3>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+                {technicians.length === 0 ? (
+                    <p className="text-zinc-500 text-center py-4">No technicians found. Create a technician user first.</p>
+                ) : (
+                    technicians.map(tech => (
                         <button
-                            onClick={() => setShowTechModal(false)}
-                            className="mt-4 w-full bg-zinc-800 py-2 rounded-lg hover:bg-zinc-700 text-white transition"
+                            key={tech.id}
+                            onClick={async () => {
+                                try {
+                                    await updateStatus(selectedTicketId, 'IN_PROGRESS', null, tech.id);
+                                    alert(`Ticket assigned to ${tech.name}`);
+                                    setShowTechModal(false);
+                                    load();
+                                } catch (err) {
+                                    alert("Assignment failed: " + err.message);
+                                }
+                            }}
+                            className="w-full text-left p-3 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition"
                         >
-                            Cancel
+                            <p className="font-semibold text-white">{tech.name}</p>
+                            <p className="text-xs text-zinc-400">{tech.email}</p>
                         </button>
-                    </div>
-                </div>
-            )}
+                    ))
+                )}
+            </div>
+            <button 
+                onClick={() => setShowTechModal(false)}
+                className="mt-4 w-full bg-zinc-800 py-2 rounded-lg hover:bg-zinc-700 text-white transition"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+)}
 
 
             {selectedImg && (

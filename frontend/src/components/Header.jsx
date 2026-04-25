@@ -5,7 +5,7 @@ import NotificationBell from './NotificationBell';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout, isAdmin, isTechnician } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin,isTechnician } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -57,7 +57,7 @@ const Header = () => {
             Maintenance
           </NavLink>
 
-          {/* TECHNICIAN ONLY - My Tickets */}
+ {/* TECHNICIAN ONLY - My Tickets */}
           {isTechnician() && (
             <NavLink
               to="/my-tickets"

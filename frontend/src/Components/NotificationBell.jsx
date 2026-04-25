@@ -90,8 +90,9 @@ const NotificationBell = () => {
                             notifications.map((notif) => (
                                 <div
                                     key={notif.id}
-                                    className={`p-3 border-b border-zinc-800 hover:bg-zinc-800 transition-colors cursor-pointer ${!notif.read ? 'bg-zinc-800/50' : ''
-                                        }`}
+                                    className={`p-3 border-b border-zinc-800 hover:bg-zinc-800 transition-colors cursor-pointer ${
+                                        !notif.read ? 'bg-zinc-800/50' : ''
+                                    }`}
                                     onClick={() => !notif.read && handleMarkAsRead(notif.id)}
                                 >
                                     <div className="flex justify-between items-start">

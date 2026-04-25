@@ -166,10 +166,11 @@ const BookingManager = () => {
 
             {/* Status Messages */}
             {submitStatus.message && (
-                <div className={`p-4 mb-6 rounded-2xl text-sm font-bold border ${submitStatus.type === 'success'
+                <div className={`p-4 mb-6 rounded-2xl text-sm font-bold border ${
+                    submitStatus.type === 'success'
                         ? 'bg-green-500/10 text-green-400 border-green-500/30'
                         : 'bg-red-500/10 text-red-400 border-red-500/30'
-                    }`}>
+                }`}>
                     {submitStatus.type === 'success' ? '✅ ' : '⚠️ '}
                     {submitStatus.message}
                 </div>
@@ -186,8 +187,9 @@ const BookingManager = () => {
                         name="resourceId"
                         value={formData.resourceId}
                         onChange={handleChange}
-                        className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all appearance-none cursor-pointer ${errors.resourceId ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
-                            }`}
+                        className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all appearance-none cursor-pointer ${
+                            errors.resourceId ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                        }`}
                     >
                         <option value="">-- Choose a Facility --</option>
                         {resources.map((res) => (
@@ -210,8 +212,9 @@ const BookingManager = () => {
                             name="startTime"
                             value={formData.startTime}
                             onChange={handleChange}
-                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${errors.startTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
-                                }`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.startTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
                         {errors.startTime && <p className="text-red-400 text-xs mt-1 font-medium">{errors.startTime}</p>}
                     </div>
@@ -225,8 +228,9 @@ const BookingManager = () => {
                             name="endTime"
                             value={formData.endTime}
                             onChange={handleChange}
-                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${errors.endTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
-                                }`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.endTime ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
                         {errors.endTime && <p className="text-red-400 text-xs mt-1 font-medium">{errors.endTime}</p>}
                     </div>
@@ -245,8 +249,9 @@ const BookingManager = () => {
                             value={formData.purpose}
                             onChange={handleChange}
                             maxLength={500}
-                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${errors.purpose ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
-                                }`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.purpose ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
                         <div className="flex justify-between items-center mt-1">
                             {errors.purpose ? <p className="text-red-400 text-xs font-medium">{errors.purpose}</p> : <span />}
@@ -266,8 +271,9 @@ const BookingManager = () => {
                             max="1000"
                             value={formData.expectedAttendees}
                             onChange={handleChange}
-                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${errors.expectedAttendees ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
-                                }`}
+                            className={`w-full p-4 bg-black/40 rounded-xl border text-sm text-white outline-none transition-all ${
+                                errors.expectedAttendees ? 'border-red-500' : 'border-zinc-800 focus:border-yellow-400'
+                            }`}
                         />
                         {errors.expectedAttendees && <p className="text-red-400 text-xs mt-1 font-medium">{errors.expectedAttendees}</p>}
                     </div>
