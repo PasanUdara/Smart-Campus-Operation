@@ -135,11 +135,10 @@ const AdminBookings = () => {
                         <button
                             key={status}
                             onClick={() => setFilter(status)}
-                            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                filter === status
+                            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === status
                                     ? 'bg-yellow-400 text-black'
                                     : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-yellow-400/50 hover:text-yellow-400'
-                            }`}
+                                }`}
                         >
                             {status}
                         </button>
@@ -168,9 +167,8 @@ const AdminBookings = () => {
                             return (
                                 <div
                                     key={booking.id}
-                                    className={`bg-zinc-900/30 border ${
-                                        booking.status === 'PENDING' ? 'border-yellow-400/20' : 'border-zinc-800'
-                                    } p-6 rounded-[2rem] hover:border-yellow-400/30 transition-all`}
+                                    className={`bg-zinc-900/30 border ${booking.status === 'PENDING' ? 'border-yellow-400/20' : 'border-zinc-800'
+                                        } p-6 rounded-[2rem] hover:border-yellow-400/30 transition-all`}
                                 >
                                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                                         {/* Left: Info */}
@@ -279,11 +277,10 @@ const AdminBookings = () => {
                             <button
                                 onClick={handleModalSubmit}
                                 disabled={actionLoading}
-                                className={`flex-1 py-3.5 rounded-xl font-black uppercase tracking-widest text-xs transition-all ${
-                                    modal.type === 'approve'
+                                className={`flex-1 py-3.5 rounded-xl font-black uppercase tracking-widest text-xs transition-all ${modal.type === 'approve'
                                         ? 'bg-green-500 text-white hover:bg-green-600'
                                         : 'bg-red-500 text-white hover:bg-red-600'
-                                } disabled:opacity-50`}
+                                    } disabled:opacity-50`}
                             >
                                 {actionLoading ? 'Processing...' : `Confirm ${modal.type === 'approve' ? 'Approval' : 'Rejection'}`}
                             </button>

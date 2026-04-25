@@ -9,31 +9,31 @@ const TechnicianTicketList = () => {
 
     useEffect(() => { load(); }, []);
 
-  const load = async () => { 
-    setLoading(true);
-    try { 
-        console.log("Technician user object:", user);
-        console.log("Technician user ID:", user?.id);
-        
-        const res = await getAllTickets(); 
-        console.log("All tickets assigned IDs:", res.data.map(t => ({ id: t.id, assignedTechId: t.assignedTechnicianId })));
-        
-        // Only show tickets assigned to this technician
-        const myTickets = res.data.filter(t => t.assignedTechnicianId === user?.userId);
-        console.log("Filtered my tickets:", myTickets);
-        
-        setTickets(myTickets); 
-    } catch (err) { 
-        console.error("Error loading tickets:", err); 
-    } finally { 
-        setLoading(false); 
-    }
-};
+    const load = async () => {
+        setLoading(true);
+        try {
+            console.log("Technician user object:", user);
+            console.log("Technician user ID:", user?.id);
+
+            const res = await getAllTickets();
+            console.log("All tickets assigned IDs:", res.data.map(t => ({ id: t.id, assignedTechId: t.assignedTechnicianId })));
+
+            // Only show tickets assigned to this technician
+            const myTickets = res.data.filter(t => t.assignedTechnicianId === user?.userId);
+            console.log("Filtered my tickets:", myTickets);
+
+            setTickets(myTickets);
+        } catch (err) {
+            console.error("Error loading tickets:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleResolve = async (id) => {
         const note = prompt("RESOLUTION NOTES: Describe the fix performed:");
         if (!note) return;
-        
+
         try {
             await updateStatus(id, 'RESOLVED', note, null);
             alert("Ticket marked as RESOLVED");
@@ -54,7 +54,7 @@ const TechnicianTicketList = () => {
     };
 
     const getStatusStyles = (status) => {
-        switch(status) {
+        switch (status) {
             case 'OPEN': return 'border-yellow-400 text-yellow-400';
             case 'IN_PROGRESS': return 'border-blue-500 text-blue-400';
             case 'RESOLVED': return 'border-emerald-500 text-emerald-400';
@@ -113,7 +113,7 @@ const TechnicianTicketList = () => {
                                     </div>
                                     <div className="flex gap-3">
                                         {t.status === 'IN_PROGRESS' && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleResolve(t.id)}
                                                 className="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold transition"
                                             >
@@ -121,7 +121,7 @@ const TechnicianTicketList = () => {
                                             </button>
                                         )}
                                         {t.status === 'RESOLVED' && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleClose(t.id)}
                                                 className="bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm font-semibold transition"
                                             >

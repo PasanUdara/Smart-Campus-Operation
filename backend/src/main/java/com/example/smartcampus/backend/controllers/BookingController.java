@@ -132,7 +132,6 @@ public class BookingController {
         }
     }
 
-    // ────────────────────────────────────────────
     // 6. REJECT BOOKING (Admin)
     // ────────────────────────────────────────────
     @PutMapping("/{id}/reject")

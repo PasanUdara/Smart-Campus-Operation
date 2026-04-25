@@ -26,8 +26,8 @@ const Home = () => {
             <span className="text-yellow-400">OPERATIONS HUB.</span>
           </h1>
           <p className="text-zinc-500 max-w-2xl mx-auto text-sm md:text-lg font-medium leading-relaxed mb-12">
-            A unified platform for campus facility bookings and 
-            real-time maintenance tracking. Designed for role-based access, 
+            A unified platform for campus facility bookings and
+            real-time maintenance tracking. Designed for role-based access,
             efficiency, and operational transparency.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
